@@ -10,7 +10,7 @@ import { VideoCameraBack } from '@mui/icons-material'
 const ExperienceItem = ({ exp }) => {
   const { updateExperience } = useExperienceStore()
 
-  const [name, setName] = useState('')
+  const [name, setName] = useState(exp.name || '')
 
   useEffect(() => {
     setName(exp.name)
@@ -25,7 +25,7 @@ const ExperienceItem = ({ exp }) => {
     }
   }
 
-  const { imageUrl } = exp.cards[0]
+  const { thumbnailUrl } = (exp.objects || [])[0] || {}
   // const aspect =
   //   imageHeight / imageWidth === 1.5
   //     ? '2x3 (4"x6")'
@@ -34,8 +34,15 @@ const ExperienceItem = ({ exp }) => {
   //     : `${imageWidth}x${imageHeight}px`
 
   return (
-    <Box display="flex" flexWrap="wrap" width="256px" height="300px" mr={4}>
-      <Card>
+    <Box
+      // display="flex"
+      // flexWrap="wrap"
+      width="256px"
+      height="300px"
+      mr={4}
+      // alignItems="flex-start"
+    >
+      <Card sx={{ width: '256px', height: '256px' }}>
         <CardActionArea
           sx={{ padding: '8px' }}
           component={Link}
@@ -56,9 +63,9 @@ const ExperienceItem = ({ exp }) => {
               alignItems="center"
               justifyContent="center"
             >
-              {imageUrl ? (
+              {thumbnailUrl ? (
                 <Image
-                  src={imageUrl}
+                  src={thumbnailUrl}
                   style={{ maxHeight: '224px', maxWidth: '100%' }}
                 />
               ) : (
@@ -91,9 +98,9 @@ const ExperienceItem = ({ exp }) => {
               alignItems="center"
               justifyContent="center"
             >
-              {imageUrl ? (
+              {thumbnailUrl ? (
                 <Image
-                  src={imageUrl}
+                  src={thumbnailUrl}
                   style={{ maxHeight: '224px', maxWidth: '100%' }}
                 />
               ) : (
@@ -107,7 +114,7 @@ const ExperienceItem = ({ exp }) => {
       </Card>
       <ItemName
         text={name}
-        placeholder="Your Experience"
+        // placeholder="Your Experience"
         type="input"
         submit={updateName}
       >
@@ -115,6 +122,7 @@ const ExperienceItem = ({ exp }) => {
           variant="standard"
           type="text"
           name="task"
+          fullWidth
           placeholder="Your Experience"
           value={name}
           onChange={e => setName(e.target.value)}

@@ -14,7 +14,7 @@ export const fetchExperiences = createAsyncThunk(
   async ({ headers }) => {
     const { experiences } = await client.request({
       headers,
-      url: '/users/me/experiences',
+      url: '/me/experiences',
     })
     return experiences
   }
@@ -25,7 +25,7 @@ export const createExperience = createAsyncThunk(
   async ({ headers, ...inputs }) => {
     const { experience } = await client.request({
       headers,
-      url: `/experiences`,
+      url: `/me/experiences`,
       method: 'POST',
       data: inputs,
     })
@@ -38,7 +38,7 @@ export const updateExperience = createAsyncThunk(
   async ({ headers, id, ...inputs }) => {
     const { experience } = await client.request({
       headers,
-      url: `/experiences/${id}`,
+      url: `/me/experiences/${id}`,
       method: 'PATCH',
       data: inputs,
     })
@@ -51,7 +51,7 @@ export const deleteExperience = createAsyncThunk(
   async ({ headers, id, ...rest }) => {
     await client.request({
       headers,
-      url: `/experiences/${id}`,
+      url: `/me/experiences/${id}`,
       method: 'DELETE',
     })
     return id

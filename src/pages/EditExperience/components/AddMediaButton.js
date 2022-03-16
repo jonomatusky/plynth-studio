@@ -9,13 +9,9 @@ import Image from 'components/Image'
 import OnboardingTooltip from 'components/OnboardingTooltip'
 
 const AddMediaButton = ({
-  imageHeight,
-  imageWidth,
-  videoDuration,
   imageSrc,
   videoSrc,
   mediaType,
-  updateMedia,
   disabled,
   showTooltips,
   handleClick,

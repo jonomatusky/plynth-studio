@@ -4,17 +4,8 @@ import { Box, Typography } from '@mui/material'
 import { Edit } from '@mui/icons-material'
 
 // Component accept text, placeholder values and also pass what type of Input - input, textarea so that we can use it for styling accordingly
-const ItemName = ({
-  text,
-  type,
-  placeholder,
-  children,
-  childRef,
-  submit,
-  ...props
-}) => {
+const ItemName = ({ text, type, children, childRef, submit, ...props }) => {
   // Manage the state whether to show the label or the input box. By default, label will be shown.
-  // Exercise: It can be made dynamic by accepting initial state as props outside the component
   const [isEditing, setEditing] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
 
@@ -55,35 +46,29 @@ const ItemName = ({
 Note: For simplicity purpose, I removed all the classnames, you can check the repo for CSS styles
 */
   return (
-    <>
+    <Box
+      width="100%"
+      pt={1}
+      alignItems="center"
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+    >
       {isEditing ? (
         <Box
-          width="100%"
-          pt={1}
-          display="flex"
-          alignItems="center"
-          onMouseEnter={() => setIsHovering(true)}
-          onMouseLeave={() => setIsHovering(false)}
+          overflow="hidden"
+          onBlur={() => setEditing(false)}
+          onKeyDown={e => handleKeyDown(e, type)}
         >
-          <Box
-            flexGrow={1}
-            overflow="hidden"
-            onBlur={() => setEditing(false)}
-            onKeyDown={e => handleKeyDown(e, type)}
-            pt="1px"
-          >
-            <b>{children}</b>
-          </Box>
+          {children}
         </Box>
       ) : (
         <Box
-          width="100%"
-          pt={1}
           display="flex"
-          alignItems="center"
-          onMouseEnter={() => setIsHovering(true)}
-          onMouseLeave={() => setIsHovering(false)}
+          width="100%"
           onClick={() => setEditing(true)}
+          borderBottom="2px solid #00000000"
+          height="29px"
+          // pt="1px"
         >
           <Box flexGrow={1} overflow="hidden">
             <Typography
@@ -91,18 +76,19 @@ Note: For simplicity purpose, I removed all the classnames, you can check the re
               whiteSpace="nowrap"
               textOverflow="ellipsis"
               overflow="hidden"
+              lineHeight={1.6}
             >
-              {text || placeholder || 'Experience Name'}
+              {text}
             </Typography>
           </Box>
           {isHovering && (
-            <Box>
+            <Box pt="3px">
               <Edit fontSize="small" />
             </Box>
           )}
         </Box>
       )}
-    </>
+    </Box>
   )
 }
 

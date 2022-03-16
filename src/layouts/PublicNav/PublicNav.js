@@ -3,7 +3,6 @@ import { Outlet } from 'react-router-dom'
 import { Box, Grid, Typography, Link } from '@mui/material'
 
 import { use100vh } from 'hooks/use-100-vh'
-import usePageTrack from 'hooks/use-page-track'
 import WebsiteNavBar from 'layouts/PublicNav/components/NavBarPublic'
 
 const PublicNav = ({
@@ -13,8 +12,6 @@ const PublicNav = ({
   backgroundColor,
   ...props
 }) => {
-  usePageTrack()
-
   const height = use100vh()
 
   return (

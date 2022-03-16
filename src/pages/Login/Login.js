@@ -11,7 +11,7 @@ import {
 import * as yup from 'yup'
 import firebase from 'config/firebase'
 import { useFormik } from 'formik'
-import { Link as RouterLink, useNavigate } from 'react-router-dom'
+import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom'
 
 import { useSession } from 'hooks/use-session'
 import TextFieldWebsite from 'components/TextFieldWebsite'
@@ -28,7 +28,10 @@ const validationSchema = yup.object({
 
 const Login = ({ title, text }) => {
   const navigate = useNavigate()
+  const location = useLocation()
   const { logout } = useSession()
+
+  let from = location.state?.from?.pathname || '/'
 
   const { setError, clearError } = useAlertStore()
 
@@ -36,7 +39,7 @@ const Login = ({ title, text }) => {
     try {
       logout()
       await firebase.auth().signInWithEmailAndPassword(email, password)
-      navigate(`/`)
+      navigate(from, { replace: true })
       clearError()
     } catch (err) {
       console.log(err)
@@ -95,7 +98,7 @@ const Login = ({ title, text }) => {
     clearError()
     try {
       await firebase.auth().signInWithPopup(provider)
-      navigate.push('/admin')
+      navigate(from, { replace: true })
     } catch (err) {
       setError({ message: 'Unable to sign in' })
     }

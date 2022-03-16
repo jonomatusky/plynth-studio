@@ -1,3 +1,4 @@
+import React, { useState } from 'react'
 import {
   Container,
   Box,
@@ -5,24 +6,60 @@ import {
   Paper,
   Typography,
   Button,
-  Link as MuiLink,
+  Link,
 } from '@mui/material'
-// import { Link } from 'react-router-dom'
-// import { ArrowBackIos } from '@mui/icons-material'
-import { useSession } from 'hooks/use-session'
-import { useState } from 'react'
+import { useUserStore } from 'hooks/store/use-user-store'
+import { useExperienceStore } from 'hooks/store/use-experience-store'
 import FormEmail from './components/FormEmail'
 import firebase from 'config/firebase'
 import useAlertStore from 'hooks/store/use-alert-store'
+import { useSession } from 'hooks/use-session'
+import usePlanStore from 'hooks/store/use-plan-store'
+import { LoadingButton } from '@mui/lab'
+import { useRequest } from 'hooks/use-request'
 
 const Account = () => {
-  const { user } = useSession()
+  const { logout } = useSession()
+  const { user, fetchStatus } = useUserStore()
+  const { experiences } = useExperienceStore()
+  const { openPlans } = usePlanStore()
   const { setError } = useAlertStore()
+  const { request, status } = useRequest()
 
-  const [passwordResetSent, setPaswordResetSent] = useState(false)
+  const [passwordResetSent, setPasswordResetSent] = useState(false)
+  const [isManagingPlan, setIsManagingPlan] = useState(false)
+
+  const handleManagePlan = async () => {
+    if (user.plan === 'free') {
+      openPlans()
+    } else {
+      setIsManagingPlan(true)
+      try {
+        if (status === 'idle') {
+          const { url } = await request({
+            url: '/payments/billing',
+            method: 'POST',
+          })
+          if (url) {
+            window.location.href = url
+          } else {
+            setIsManagingPlan(false)
+            setError({
+              message:
+                'Unable to access your billing portal. Please try again later.',
+            })
+          }
+          window.location.href = url
+        }
+      } catch (err) {
+        setIsManagingPlan(false)
+        setError({ message: err.message })
+      }
+    }
+  }
 
   const handleResetEmail = async () => {
-    setPaswordResetSent(true)
+    setPasswordResetSent(true)
     try {
       await firebase.auth().sendPasswordResetEmail(user.email)
     } catch (err) {
@@ -30,114 +67,128 @@ const Account = () => {
     }
   }
 
+  const { planName, experienceLimit } = user
+
   return (
-    <Container>
-      <Grid container justifyContent="center">
-        <Grid item xs={12} md={6}>
-          <Box pt={5}>
-            <Grid container justifyContent="center" spacing={2}>
-              <Grid item xs={12}>
-                <Box pb={1}>
-                  <Typography variant="h5" align="center">
-                    <b>My Account</b>
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={12}>
+    <Container maxWidth="xs">
+      {fetchStatus === 'succeeded' && (
+        <Grid container justifyContent="center" spacing={2}>
+          <Grid item xs={12} mt={2}>
+            <Typography variant="h5" align="center">
+              <b>My Account</b>
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Box pt={3}>
+              <Typography>
+                <b>Current Plan</b>
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12}>
+            <Paper>
+              <Box p={3}>
                 <Typography>
-                  <b>Email</b>
+                  You're currently on the <b>{planName}</b> plan.
                 </Typography>
-              </Grid>
-              <Grid item xs={12}>
-                <FormEmail />
-              </Grid>
-              <Grid item xs={12}>
-                <Box pt={3}>
-                  <Typography>
-                    <b>Password</b>
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={12}>
-                <Paper>
-                  <Box p={3}>
-                    {!passwordResetSent && (
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        sx={{ height: '38px' }}
-                        onClick={handleResetEmail}
-                      >
-                        Reset Password
-                      </Button>
-                    )}
-                    {passwordResetSent && (
-                      <Box minHeight="38px">
-                        <Typography variant="subtitle2">
-                          We've emailed you a link to reset your password.
-                          Didn't receive an email? Check your junk folder or
-                          request another link.
-                        </Typography>
-                      </Box>
-                    )}
-                  </Box>
-                </Paper>
-              </Grid>
-              <Grid item xs={12}>
-                <Box pt={3}>
-                  <Typography>
-                    <b>Username</b>
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={12}>
-                <Paper>
-                  <Box p={3}>
+                <Typography pb={2}>
+                  You're using <b>{experiences.length}</b> of{' '}
+                  <b>{experienceLimit}</b> experiences.
+                </Typography>
+                <LoadingButton
+                  variant="contained"
+                  color={user.plan === 'free' ? 'primary' : 'secondary'}
+                  disableElevation={user.plan !== 'free'}
+                  size="large"
+                  onClick={handleManagePlan}
+                  fullWidth
+                  loading={isManagingPlan}
+                >
+                  {user.plan !== 'free' ? 'Change Plan' : 'Manage Plan'}
+                </LoadingButton>
+              </Box>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} mt={2}>
+            <Typography>
+              <b>Email</b>
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <FormEmail />
+          </Grid>
+          <Grid item xs={12}>
+            <Typography>
+              <b>Password</b>
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Paper>
+              <Box p={3}>
+                {!passwordResetSent && (
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={handleResetEmail}
+                    size="large"
+                    disableElevation
+                    fullWidth
+                  >
+                    Reset Password
+                  </Button>
+                )}
+                {passwordResetSent && (
+                  <Box minHeight="38px">
                     <Typography variant="subtitle2">
-                      To change your username, please{' '}
-                      <MuiLink
-                        href="https://help.plynth.com"
-                        target="_blank"
-                        color="inherit"
-                        underline="always"
+                      We've emailed you a link to reset your password. Didn't
+                      receive an email? Check your junk folder or{' '}
+                      <Link
+                        href="#"
+                        title="Click to reset"
+                        onClick={() => setPasswordResetSent(false)}
                       >
-                        contact us
-                      </MuiLink>
+                        request another link.
+                      </Link>
                     </Typography>
                   </Box>
-                </Paper>
-              </Grid>
-              <Grid item xs={12}>
-                <Box pt={3}>
-                  <Typography>
-                    <b>Delete Account</b>
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={12}>
-                <Paper>
-                  <Box p={3}>
-                    <Typography variant="subtitle2">
-                      To delete your account, please{' '}
-                      <MuiLink
-                        href="https://help.plynth.com"
-                        target="_blank"
-                        color="inherit"
-                        underline="always"
-                      >
-                        contact us
-                      </MuiLink>
-                    </Typography>
-                  </Box>
-                </Paper>
-              </Grid>
-              <Grid item xs={12}>
-                <Box height="24px" />
-              </Grid>
-            </Grid>
-          </Box>
+                )}
+              </Box>
+            </Paper>
+          </Grid>
+          <Grid item xs={12}>
+            <Box pt={3}>
+              <Typography>
+                <b>Delete Account</b>
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12}>
+            <Paper>
+              <Box p={3}>
+                <Typography variant="subtitle2">
+                  To delete your account, please{' '}
+                  <Link
+                    href="https://help.plynth.com"
+                    target="_blank"
+                    color="inherit"
+                    underline="always"
+                  >
+                    contact us
+                  </Link>
+                </Typography>
+              </Box>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} textAlign="center" mt={1}>
+            <Button onClick={logout} color="secondary">
+              Log Out
+            </Button>
+          </Grid>
+          <Grid item xs={12}>
+            <Box height="24px" />
+          </Grid>
         </Grid>
-      </Grid>
+      )}
     </Container>
   )
 }

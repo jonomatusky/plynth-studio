@@ -4,9 +4,10 @@ const theme = createTheme({
   palette: {
     primary: { main: '#CD0A64' },
     secondary: { main: '#666666' },
-    website: { main: '#ffffff' },
+    website: { main: '#fafafa' },
     error: { main: '#FF9516' },
     background: {
+      default: '#fafafa',
       card: '#212421',
     },
   },

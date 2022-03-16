@@ -107,7 +107,7 @@ const WebsiteNavBar = ({ left, right, position, opacity }) => {
                       </MenuItem>
                       <MenuItem
                         component={RouterLink}
-                        to={user ? '/admin' : '/login'}
+                        to={user ? '/' : '/login'}
                       >
                         Sign In
                       </MenuItem>
@@ -118,7 +118,7 @@ const WebsiteNavBar = ({ left, right, position, opacity }) => {
                     <Box mr={1}>
                       <MuiButton
                         component={RouterLink}
-                        to={user ? '/admin' : '/login'}
+                        to={user ? '/' : '/login'}
                         size="small"
                         sx={{ textTransform: 'none' }}
                         color="secondary"

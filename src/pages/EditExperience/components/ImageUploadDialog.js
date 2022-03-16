@@ -98,8 +98,6 @@ const ImageUploadDialog = ({
 
   const FileUpload = () => {
     const onDrop = useCallback(acceptedFiles => {
-      console.log('uploading file')
-
       acceptedFiles.forEach(file => {
         let imageSrc = URL.createObjectURL(file)
 
@@ -174,12 +172,9 @@ const ImageUploadDialog = ({
     const [sliderValue, setSliderValue] = useState(0)
 
     const handleChangeTime = (e, value) => {
-      console.log(value)
       setSliderValue(value)
       onChange(value)
     }
-
-    console.log(videoDuration)
 
     return (
       <>
@@ -203,7 +198,7 @@ const ImageUploadDialog = ({
   }
 
   const getFrame = () => {
-    const video = document.getElementById('experience-video')
+    const video = document.getElementById('piece-video')
     const format = 'jpeg'
     const quality = 0.92
 
@@ -303,7 +298,7 @@ const ImageUploadDialog = ({
                       justifyContent="center"
                     >
                       <video
-                        id="experience-video"
+                        id="piece-video"
                         src={videoUrl}
                         crossOrigin="anonymous"
                         ref={videoRef}
@@ -313,7 +308,7 @@ const ImageUploadDialog = ({
                           objectFit: 'contain',
                         }}
                         muted
-                        alt="Experience"
+                        alt="Piece"
                       />
                     </Box>
                   </Box>
@@ -326,7 +321,7 @@ const ImageUploadDialog = ({
                       maxHeight: '360px',
                       objectFit: 'contain',
                     }}
-                    alt="Experience"
+                    alt="Piece"
                   />
                 )}
               </Box>
@@ -377,8 +372,6 @@ const ImageUploadDialog = ({
 
     const [status, setStatus] = useState('idle')
 
-    console.log('status: ' + status)
-
     const [currentCrop, setCurrentCrop] = useState(
       imageToCrop.height >= imageToCrop.width ? 0 : 1
     )
@@ -414,10 +407,6 @@ const ImageUploadDialog = ({
 
           const canvas = document.createElement('canvas')
 
-          console.log(imageToCrop.src)
-          console.log(endWidth)
-          console.log(endHeight)
-
           canvas.width = endWidth
           canvas.height = endHeight
 
@@ -428,7 +417,6 @@ const ImageUploadDialog = ({
 
             ctx.canvas.toBlob(
               blob => {
-                console.log('image cropped')
                 resolve({ imageFile: blob, width: endWidth, height: endHeight })
               },
               'image/jpeg',
@@ -437,7 +425,6 @@ const ImageUploadDialog = ({
           }
           img.onerror = () => {
             reject('error cropping image')
-            console.log('there was an error cropping the image')
             setStatus('error')
           }
           img.src = imageToCrop.src
@@ -447,8 +434,8 @@ const ImageUploadDialog = ({
       try {
         let { imageFile, width, height } = await cropImage()
 
-        let { signedUrl, imageFilepath } = await request({
-          url: '/auth/sign-s3',
+        let { signedUrl, filepath } = await request({
+          url: '/uploads/sign-s3',
           method: 'POST',
           data: {
             fileName: imageFile.name,
@@ -458,14 +445,13 @@ const ImageUploadDialog = ({
 
         await request({ url: signedUrl, method: 'PUT', data: imageFile })
 
-        await submitImage({ filepath: imageFilepath, width, height })
-        setImage({ filepath: imageFilepath, width, height })
+        await submitImage({ filepath, width, height })
+        setImage({ filepath, width, height })
 
         URL.revokeObjectURL(imageToCrop.src)
         setImageToCrop({})
         setIsReplacing(false)
       } catch (err) {
-        console.log(err)
         setStatus('error')
       }
     }
@@ -704,7 +690,7 @@ const ImageUploadDialog = ({
                     maxHeight: '100%',
                     objectFit: 'contain',
                   }}
-                  alt="Experience"
+                  alt="Piece"
                 />
               )}
             </Box>

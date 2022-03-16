@@ -11,18 +11,17 @@ export const useFetch = () => {
 
   const {
     fetchUser,
-    status: fetchUserStatus,
+    fetchStatus: fetchUserStatus,
     user: storeUser,
-    createMeStatus,
-    createMe,
     subscribe,
   } = useUserStore()
-  const { fetchExperiences, status: fetchExperiencesStatus } =
+  const { fetchExperiences, fetchStatus: fetchExperiencesStatus } =
     useExperienceStore()
 
   useEffect(() => {
     const fetch = async () => {
       try {
+        console.log('fetching user')
         await fetchUser()
       } catch (err) {
         setError({ message: err.message })
@@ -35,24 +34,16 @@ export const useFetch = () => {
   }, [user, fetchUser, fetchUserStatus, setError, subscribe])
 
   useEffect(() => {
-    if (
-      fetchUserStatus === 'succeeded' &&
-      !storeUser._id &&
-      createMeStatus === 'idle'
-    ) {
-      try {
-        createMe({})
-      } catch (err) {}
-    }
-  }, [createMe, fetchUserStatus, storeUser, createMeStatus])
-
-  useEffect(() => {
     const fetch = async () => {
       try {
+        console.log('fetching experiences')
         await fetchExperiences()
-      } catch (err) {}
+      } catch (err) {
+        setError({ message: err.message })
+      }
     }
     if (
+      !!user &&
       fetchUserStatus === 'succeeded' &&
       fetchExperiencesStatus === 'idle' &&
       !!storeUser._id
@@ -63,8 +54,9 @@ export const useFetch = () => {
     fetchUserStatus,
     fetchExperiencesStatus,
     fetchExperiences,
-    user,
     storeUser,
+    setError,
+    user,
   ])
 
   return

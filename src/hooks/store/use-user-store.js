@@ -2,13 +2,7 @@ import { useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 import { useThunk } from 'hooks/use-thunk'
-import {
-  fetchUser,
-  createUser,
-  updateUser,
-  deleteUser,
-  clearUser,
-} from 'redux/userSlice'
+import { fetchUser, updateUser, deleteUser, clearUser } from 'redux/userSlice'
 
 export const useUserStore = () => {
   const dispatch = useDispatch()
@@ -17,13 +11,6 @@ export const useUserStore = () => {
   const _fetchUser = useCallback(async () => {
     await dispatchThunk(fetchUser)
   }, [dispatchThunk])
-
-  const _createMe = useCallback(
-    async user => {
-      await dispatchThunk(createUser, user)
-    },
-    [dispatchThunk]
-  )
 
   const _updateUser = useCallback(
     async updates => {
@@ -40,19 +27,17 @@ export const useUserStore = () => {
     dispatch(clearUser())
   }, [dispatch])
 
-  const { user, status, createStatus, updateStatus, error } = useSelector(
+  const { user, fetchStatus, updateStatus, error } = useSelector(
     state => state.user
   )
 
   return {
     fetchUser: _fetchUser,
-    createMe: _createMe,
     updateUser: _updateUser,
     deleteUser: _deleteUser,
     clearUser: _clearUser,
     user,
-    status,
-    createStatus,
+    fetchStatus,
     updateStatus,
     error,
   }

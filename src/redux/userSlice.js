@@ -4,7 +4,6 @@ import * as client from '../util/client'
 let initialState = {
   user: {},
   fetchStatus: 'idle',
-  createStatus: 'idle',
   updateStatus: 'idle',
   error: null,
 }
@@ -15,19 +14,6 @@ export const fetchUser = createAsyncThunk(
     const { user } = await client.request({
       headers,
       url: '/me',
-    })
-    return user
-  }
-)
-
-export const createUser = createAsyncThunk(
-  'user/createUser',
-  async ({ headers, ...inputs }) => {
-    const { user } = await client.request({
-      headers,
-      url: '/me',
-      method: 'POST',
-      data: inputs,
     })
     return user
   }
@@ -81,17 +67,6 @@ const userSlice = createSlice({
       state.fetchStatus = 'failed'
       state.error = action.error.message
       state.scanRoute = '/'
-    },
-    [createUser.pending]: (state, action) => {
-      state.createStatus = 'loading'
-    },
-    [createUser.fulfilled]: (state, action) => {
-      state.createStatus = 'succeeded'
-      state.user = action.payload
-    },
-    [createUser.rejected]: (state, action) => {
-      state.createStatus = 'failed'
-      state.error = action.error.message
     },
     [updateUser.pending]: (state, action) => {
       state.updateStatus = 'loading'

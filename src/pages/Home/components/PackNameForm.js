@@ -43,18 +43,16 @@ const PackNameForm = ({ onSubmit, onCancel, name, buttonText, pending }) => {
           <Grid container justifyContent="space-between" alignItems="center">
             {onCancel && (
               <Grid item>
-                <Grid item>
-                  <MuiButton
-                    onClick={onCancel}
-                    variant="text"
-                    startIcon={<Close />}
-                    size="small"
-                    type="button"
-                    onBlur={formik.handleSubmit}
-                  >
-                    Cancel
-                  </MuiButton>
-                </Grid>
+                <MuiButton
+                  onClick={onCancel}
+                  variant="text"
+                  startIcon={<Close />}
+                  size="small"
+                  type="button"
+                  onBlur={formik.handleSubmit}
+                >
+                  Cancel
+                </MuiButton>
               </Grid>
             )}
 

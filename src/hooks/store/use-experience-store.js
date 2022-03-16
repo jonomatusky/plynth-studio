@@ -58,7 +58,7 @@ export const useExperienceStore = () => {
   const {
     experiences,
     newExperienceImage,
-    status,
+    fetchStatus,
     error,
     updateStatus,
     createStatus,
@@ -71,12 +71,6 @@ export const useExperienceStore = () => {
     )
   }
 
-  const addCard = ({ id: experienceId, type: cardType }) => {
-    const cards = (selectExperience(experienceId) || {}).cards
-    const newCards = [...cards, { type: cardType }]
-    _updateExperience({ id: experienceId, cards: newCards })
-  }
-
   return {
     fetchExperiences: _fetchExperiences,
     createExperience: _createExperience,
@@ -85,11 +79,10 @@ export const useExperienceStore = () => {
     setNewExperienceImage: _setExperienceImage,
     clearExperiences: _clearExperiences,
     selectExperience,
-    addCard,
     filter,
     experiences,
     newExperienceImage,
-    status,
+    fetchStatus,
     error,
     updateStatus,
     createStatus,

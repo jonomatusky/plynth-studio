@@ -1,148 +1,60 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { Grid, Box, Container, Button, Paper, Typography } from '@mui/material'
 import {
-  Grid,
-  Box,
-  Container,
-  Button,
-  Paper,
-  Typography,
-  Fade,
-} from '@mui/material'
-import {
-  Launch,
   Link as LinkIcon,
   People,
   PhoneIphone,
-  QrCode2,
   VideoCameraBack,
-  AutoFixHigh,
   Download,
   FilterNone,
   ArrowForward,
-  Visibility,
   Computer,
 } from '@mui/icons-material'
-import { LoadingButton } from '@mui/lab'
 import QRCode from 'qrcode.react'
 import copy from 'copy-to-clipboard'
 import { isMobile, isTablet } from 'react-device-detect'
 
 import useExperienceStore from 'hooks/store/use-experience-store'
+
 import AddMediaButton from './components/AddMediaButton'
 import WelcomeDialog from './components/WelcomeDialog'
 import { useRequest } from 'hooks/use-request'
 import { useAlertStore } from 'hooks/store/use-alert-store'
-import axios from 'axios'
 import { loadImgAsync } from 'util/imageHandling'
 import DownloadQR from 'components/DownloadQr'
 import ImageUploadDialog from './components/ImageUploadDialog'
 import VideoUploadDialog from './components/VideoUploadDialog'
-import OnboardingTooltip from 'components/OnboardingTooltip'
 
-const { REACT_APP_ASSET_URL, REACT_APP_PUBLIC_URL } = process.env
+const { REACT_APP_PUBLIC_URL } = process.env
 
-const demoImageName = 'Postcard+Mixtape+Vol+1+600px.jpg'
-const demoImageUrl = REACT_APP_ASSET_URL + '/' + demoImageName
-
-const Experience = () => {
-  const { selectExperience, packs, updatePack } = useExperienceStore()
-
-  const { eid } = useParams()
-  const experiencePage = !!eid ? REACT_APP_PUBLIC_URL + '/p/' + eid : null
-
-  const pack = selectExperience(experienceId)
-
-  const cards = (pack || {}).cards
-  const media = (cards || [{}])[0]
-
-  const previewPage = !!media.id ? `/preview/${experienceId}/${media.id}` : null
-
+const EditExperience = () => {
+  const { selectExperience, updateExperience, experiences, updateStatus } =
+    useExperienceStore()
   const { setError } = useAlertStore()
+  const { id } = useParams()
+  const experiencePage = !!id ? REACT_APP_PUBLIC_URL + '/p/' + id : null
 
-  const {
-    image,
-    imageUrl,
-    imageHeight,
-    imageWidth,
-    video,
-    videoDuration,
-    targets,
-  } = media
+  const experience = selectExperience(id)
+  const { targetUrl, objects } = experience
+  const object = (objects || [])[0] || {}
+  const { posterUrl: imageUrl, assetUrl: videoUrl } = object
 
-  let imageSrc = image ? REACT_APP_ASSET_URL + '/' + image : null
-  let videoSrc = video ? REACT_APP_ASSET_URL + '/' + video : null
+  // const previewPage = !!media.id ? `/preview/${id}/${media.id}` : null
 
-  // useEffect(() => {
-  //   const onPackChange = () => {
-  //     const cards = (pack || {}).cards
-  //     const card = (cards || [])[0]
-  //     const newMedia = card || {}
-  //     setMedia(newMedia)
-  //   }
-  //   onPackChange()
-  // }, [pack])
+  const handleUpdateExperience = ({ name, href, label, color }) => {
+    const links = [
+      {
+        href,
+        label,
+        color,
+      },
+    ]
 
-  const handleUpdateMedia = newMedia => {
-    updatePack({ id: experienceId, cards: [{ ...media, ...newMedia }] })
+    updateExperience({ id, name, links })
   }
 
-  // const [removeDialogIsOpen, setRemoveDialogIsOpen] = useState(false)
-
-  // const handleRemoveClose = () => {
-  //   setRemoveDialogIsOpen(false)
-  // }
-
-  // const handleRemoveOpen = () => {
-  //   setRemoveDialogIsOpen(true)
-  // }
-
   const DisplayCard = () => {
-    const [hideImage, setHideImage] = useState(false)
-    const [hideVideo, setHideVideo] = useState(!!targets)
-
-    const playerRef = useRef()
-
-    useEffect(() => {
-      if (!!video && !targets && !isLoading) {
-        if (hideImage) {
-          const timeout = setTimeout(() => {
-            setHideImage(false)
-          }, 4000)
-          return () => clearTimeout(timeout)
-        } else {
-          const timeout = setTimeout(() => {
-            if (playerRef.current) {
-              try {
-                playerRef.current.currentTime = 0
-                var playPromise = playerRef.current.play()
-
-                if (playPromise !== undefined) {
-                  playPromise
-                    .then(_ => {
-                      // Automatic playback started!
-                      // Show playing UI.
-                    })
-                    .catch(error => {
-                      // Auto-play was prevented
-                      // Show paused UI.
-                    })
-                }
-              } catch (err) {}
-            }
-            setHideImage(true)
-          }, 1000)
-          return () => clearTimeout(timeout)
-        }
-      } else if (targets) {
-        setHideImage(false)
-        setHideVideo(true)
-      } else {
-        setHideImage(false)
-        setHideVideo(false)
-      }
-    }, [hideImage])
-
     return (
       <Box
         backgroundColor="white"
@@ -154,16 +66,12 @@ const Experience = () => {
         sx={{
           transform: 'rotate(3deg)',
           width: { xs: '350px', lg: '450px' },
-          height: {
-            xs: imageSrc ? (imageHeight / imageWidth) * 350 + 'px' : '525px',
-            lg: imageSrc ? (imageHeight / imageWidth) * 450 + 'px' : '675px',
-          },
         }}
         mr={2}
         boxShadow="5px 5px 15px #00000040"
         position="relative"
       >
-        {!imageSrc && !videoSrc && (
+        {!imageUrl && (
           <Box color="#dddddd" textAlign="center">
             <VideoCameraBack color="inherit" sx={{ fontSize: 100 }} />
             <Typography>
@@ -171,37 +79,17 @@ const Experience = () => {
             </Typography>
           </Box>
         )}
-        {imageSrc && (
-          <Fade
-            // appear={false}
-            timeout={{ enter: 0, exit: 1000 }}
-            in={!hideImage}
-          >
-            <img
-              src={imageSrc}
-              width="100%"
-              height="100%"
-              alt="preview"
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                zIndex: 10,
-              }}
-            />
-          </Fade>
-        )}
-        {videoSrc && !hideVideo && (
-          <video
-            src={videoSrc}
-            ref={playerRef}
-            autoPlay
-            muted
+        {imageUrl && (
+          <img
+            src={imageUrl}
+            width="100%"
+            height="100%"
+            alt="preview"
             style={{
               position: 'absolute',
-              height: '100%',
-              width: '100%',
-              objectFit: 'cover',
+              top: 0,
+              left: 0,
+              zIndex: 10,
             }}
           />
         )}
@@ -209,9 +97,9 @@ const Experience = () => {
     )
   }
 
-  const showOnboarding = packs.length === 1 && !isMobile && !isTablet
+  const showOnboarding = experiences.length === 1 && !isMobile && !isTablet
   const showWelcomeDialogAtStart =
-    showOnboarding && !imageSrc && !videoSrc && !targets
+    showOnboarding && !imageUrl && !videoUrl && !targetUrl
 
   const [welcomeDialogIsOpen, setWelcomeDialogIsOpen] = useState(
     showWelcomeDialogAtStart
@@ -224,85 +112,9 @@ const Experience = () => {
   }, [showWelcomeDialogAtStart])
 
   const [isLoading, setIsLoading] = useState(false)
-  const [percent, setPercent] = useState(0)
+  // const [percent, setPercent] = useState(0)
 
   const { request } = useRequest()
-
-  const getImageTargets = async () => {
-    setIsLoading(true)
-
-    if (imageSrc === demoImageUrl) {
-      try {
-        await updatePack({
-          id: experienceId,
-          isPublic: true,
-          cards: [
-            {
-              ...media,
-              targets: '9ff785ec-2c25-43d7-a886-601a1a7aa3b3.mind',
-            },
-          ],
-        })
-      } catch (err) {}
-      return
-    }
-
-    try {
-      const response = await axios.request({
-        url: imageSrc,
-        responseType: 'blob',
-      })
-
-      const blob = response.data
-      const src = await URL.createObjectURL(blob)
-
-      let img = await loadImgAsync(src)
-      URL.revokeObjectURL(src)
-
-      const compiler = new window.MINDAR.IMAGE.Compiler()
-      await compiler.compileImageTargets([img], progress => {
-        setPercent(progress.toFixed(0))
-      })
-
-      const exportedBuffer = await compiler.exportData()
-      var targetBlob = new Blob([exportedBuffer])
-      var targetFile = new File([targetBlob], `${experienceId}-targets.mind`)
-
-      let { signedUrl, imageFilepath } = await request({
-        url: '/auth/sign-s3',
-        method: 'POST',
-        data: {
-          fileName: `${experienceId}-targets`,
-          fileType: 'application/mind',
-        },
-      })
-
-      await request({
-        url: signedUrl,
-        method: 'PUT',
-        data: targetFile,
-        timeout: 100000,
-      })
-
-      await updatePack({
-        id: experienceId,
-        isPublic: true,
-        cards: [{ ...media, targets: imageFilepath }],
-      })
-    } catch (err) {
-      setError({
-        message:
-          'Sorry, there was an error creating your experience. Please try again.',
-      })
-      setIsLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    if (targets) {
-      setIsLoading(false)
-    }
-  }, [targets])
 
   const CopyButton = () => {
     const [isCopied, setIsCopied] = useState(false)
@@ -323,7 +135,6 @@ const Experience = () => {
         color="secondary"
         endIcon={<FilterNone />}
         onClick={handleCopy}
-        disabled={!targets}
       >
         {isCopied ? 'Copied!' : 'Copy Link'}
       </Button>
@@ -339,46 +150,105 @@ const Experience = () => {
     !videoDialogIsOpen &&
     !imageDialogIsOpen
 
-  const submitImage = ({ filepath, height, width }) => {
-    handleUpdateMedia({
-      image: filepath,
-      imageHeight: height,
-      imageWidth: width,
-    })
+  const handleUpdateImage = image => {
+    let newObject = { ...object }
+    newObject.poster = image
+
+    updateExperience({ id, objects: [newObject] })
   }
 
-  const submitVideo = ({ filepath, duration, height, width }) => {
-    let media = {}
-    if (filepath) {
-      media.video = filepath
-    }
-    if (duration || height || width) {
-      media.videoDuration = duration
-      media.videoWidth = width
-      media.videoHeight = height
-    }
-    handleUpdateMedia(media)
+  const handleUpdateVideo = video => {
+    let newObject = { ...object }
+    newObject.asset = video
+
+    updateExperience({ id, objects: [newObject] })
   }
+
+  useEffect(() => {
+    if (imageUrl && videoUrl && updateStatus === 'idle' && !isLoading) {
+      const getImageTargets = async () => {
+        setIsLoading(true)
+
+        try {
+          const response = await request({
+            url: imageUrl,
+            responseType: 'blob',
+          })
+
+          const blob = response.data
+          const src = await URL.createObjectURL(blob)
+
+          let img = await loadImgAsync(src)
+          URL.revokeObjectURL(src)
+
+          const compiler = new window.MINDAR.IMAGE.Compiler()
+          await compiler.compileImageTargets(
+            [img]
+            // , progress => {setPercent(progress.toFixed(0))}
+          )
+
+          const exportedBuffer = await compiler.exportData()
+          var targetBlob = new Blob([exportedBuffer])
+          var targetFile = new File([targetBlob], `${id}-targets.mind`)
+
+          let { signedUrl, filepath } = await request({
+            url: '/uploads/sign-s3',
+            method: 'POST',
+            data: {
+              fileName: `${id}-targets`,
+              fileType: 'application/mind',
+            },
+          })
+
+          await request({
+            url: signedUrl,
+            method: 'PUT',
+            data: targetFile,
+            timeout: 100000,
+          })
+
+          await updateExperience({ target: filepath })
+          setIsLoading(false)
+        } catch (err) {
+          setError({
+            message:
+              'Sorry, there was an error creating your experience. Please try again.',
+          })
+          setIsLoading(false)
+        }
+      }
+
+      getImageTargets()
+    }
+  }, [
+    videoUrl,
+    imageUrl,
+    targetUrl,
+    id,
+    request,
+    setError,
+    updateExperience,
+    updateStatus,
+    isLoading,
+  ])
 
   return (
     <>
       <ImageUploadDialog
         open={imageDialogIsOpen}
-        imageUrl={imageSrc}
-        videoUrl={videoSrc}
-        videoDuration={videoDuration}
-        width={imageWidth}
-        height={imageHeight}
-        submitImage={submitImage}
+        imageUrl={imageUrl}
+        videoUrl={videoUrl}
+        submitImage={handleUpdateImage}
         onClose={() => setImageDialogIsOpen(false)}
       />
       <VideoUploadDialog
         open={videoDialogIsOpen}
-        videoUrl={videoSrc}
-        videoDuration={videoDuration}
-        submit={submitVideo}
+        videoUrl={videoUrl}
+        submit={handleUpdateVideo}
         onClose={() => setVideoDialogIsOpen(false)}
       />
+
+      {/* <BarEditPiece previewPageUrl={targets ? previewPage : null} /> */}
       <WelcomeDialog
         open={welcomeDialogIsOpen}
         onClose={() => setWelcomeDialogIsOpen(false)}
@@ -423,7 +293,7 @@ const Experience = () => {
                         <Button
                           variant="contained"
                           component={Link}
-                          to="/admin/experiences"
+                          to="/admin/pieces"
                           fullWidth
                         >
                           Go Home
@@ -463,123 +333,31 @@ const Experience = () => {
                           <AddMediaButton
                             mediaType="video"
                             // updateMedia={handleUpdateMedia}
-                            videoDuration={videoDuration}
-                            videoSrc={videoSrc}
-                            imageSrc={imageSrc}
-                            disabled={!!targets}
+                            // updateMedia={handleUpdateVideo}
+                            videoSrc={videoUrl}
+                            imageSrc={imageUrl}
                             showTooltips={showTooltips}
                             handleClick={() => setVideoDialogIsOpen(true)}
                           />
 
                           <LinkIcon
                             fontSize="large"
-                            color={targets ? 'primary' : 'secondary'}
+                            color={targetUrl ? 'primary' : 'secondary'}
                             sx={{ display: { xs: 'none', sm: 'block' } }}
                           />
 
                           <AddMediaButton
                             mediaType="image"
                             // updateMedia={handleUpdateMedia}
-                            imageSrc={imageSrc}
-                            imageHeight={imageHeight}
-                            imageWidth={imageWidth}
-                            videoSrc={videoSrc}
-                            videoDuration={videoDuration}
-                            disabled={!!targets}
+                            imageSrc={imageUrl}
+                            videoSrc={videoUrl}
                             showTooltips={showTooltips}
                             handleClick={() => setImageDialogIsOpen(true)}
                           />
                         </Box>
                         <Box
                           width="100%"
-                          display="flex"
-                          justifyContent="center"
-                        >
-                          <Box width="320px" mt={4} mb={4}>
-                            <OnboardingTooltip
-                              open={
-                                showTooltips &&
-                                !!imageSrc &&
-                                !!videoSrc &&
-                                !targets &&
-                                !isLoading
-                              }
-                              title="Now link your image and video to generate your experience, then give it a try!"
-                              position="bottom"
-                            >
-                              <LoadingButton
-                                variant={targets ? 'outlined' : 'contained'}
-                                fullWidth
-                                disabled={!imageSrc || !videoSrc || !!targets}
-                                onClick={getImageTargets}
-                                endIcon={
-                                  targets ? (
-                                    <ArrowForward
-                                      sx={{ transform: 'rotate(45deg)' }}
-                                    />
-                                  ) : (
-                                    <AutoFixHigh />
-                                  )
-                                }
-                                loading={isLoading}
-                                loadingPosition="end"
-                                sx={{
-                                  display: { xs: 'none', md: 'flex' },
-                                  '&.Mui-disabled': {
-                                    borderColor: targets
-                                      ? 'primary.main'
-                                      : null,
-                                    color: targets ? 'primary.main' : null,
-                                  },
-                                }}
-                              >
-                                {isLoading ? (
-                                  <b>Building experience... {percent}%</b>
-                                ) : targets ? (
-                                  <b>Ready to Go!</b>
-                                ) : (
-                                  <b>Create Experience</b>
-                                )}
-                              </LoadingButton>
-                            </OnboardingTooltip>
-                            {targets ? (
-                              <LoadingButton
-                                variant="outlined"
-                                fullWidth
-                                href={experiencePage}
-                                target="_blank"
-                                endIcon={<Visibility />}
-                                sx={{
-                                  display: { xs: 'flex', md: 'none' },
-                                }}
-                              >
-                                <b>Open Experience</b>
-                              </LoadingButton>
-                            ) : (
-                              <LoadingButton
-                                variant={'contained'}
-                                fullWidth
-                                disabled={!imageSrc || !videoSrc || !!targets}
-                                onClick={getImageTargets}
-                                endIcon={<AutoFixHigh />}
-                                loading={isLoading}
-                                loadingPosition="end"
-                                sx={{
-                                  display: { xs: 'flex', md: 'none' },
-                                }}
-                              >
-                                {isLoading ? (
-                                  <b>Building experience... {percent}%</b>
-                                ) : (
-                                  <b>Create Experience</b>
-                                )}
-                              </LoadingButton>
-                            )}
-                          </Box>
-                        </Box>
-                        <Box
-                          width="100%"
-                          color={targets ? 'text.primary' : '#cccccc'}
+                          color={targetUrl ? 'text.primary' : '#cccccc'}
                           sx={{ display: { xs: 'none', md: 'flex' } }}
                         >
                           <Box flexGrow={1} display="flex" flexWrap="wrap">
@@ -646,20 +424,20 @@ const Experience = () => {
                                 display="flex"
                                 justifyContent="center"
                               ></Box>
-                              <Box flexGrow={1}>
-                                <Typography>
-                                  <Button
-                                    sx={{ textTransform: 'none' }}
-                                    endIcon={<Launch />}
-                                    color="inherit"
-                                    href={previewPage}
-                                    target="_blank"
-                                    disabled={!targets}
-                                  >
-                                    View Preview Page
-                                  </Button>
-                                </Typography>
-                              </Box>
+                              {/* <Box flexGrow={1}>
+                                  <Typography>
+                                    <Button
+                                      sx={{ textTransform: 'none' }}
+                                      endIcon={<Launch />}
+                                      color="inherit"
+                                      href={previewPage}
+                                      target="_blank"
+                                      disabled={!targets}
+                                    >
+                                      View Preview Page
+                                    </Button>
+                                  </Typography>
+                                </Box> */}
                             </Box>
                           </Box>
                           <Box
@@ -671,17 +449,13 @@ const Experience = () => {
                             ml={1}
                           >
                             <Box width="120px" height="120px" m={1} mb={0}>
-                              {targets ? (
-                                <QRCode
-                                  size={120}
-                                  id="qr"
-                                  value={experiencePage}
-                                />
-                              ) : (
-                                <QrCode2 sx={{ fontSize: 120 }} />
-                              )}
+                              <QRCode
+                                size={120}
+                                id="qr"
+                                value={experiencePage}
+                              />
                             </Box>
-                            {targets && (
+                            {targetUrl && (
                               <>
                                 <Box
                                   display="flex"
@@ -727,15 +501,11 @@ const Experience = () => {
                           justifyContent="center"
                         >
                           <Box width="320px" mt={1}>
-                            <DownloadQR
-                              qrValue={experiencePage}
-                              fileName={experienceId}
-                            >
+                            <DownloadQR qrValue={experiencePage} fileName={id}>
                               <Button
                                 variant="contained"
                                 fullWidth
                                 endIcon={<Download />}
-                                disabled={!targets}
                               >
                                 Download QR Code
                               </Button>
@@ -747,7 +517,6 @@ const Experience = () => {
                             fullWidth
                             endIcon={<Download />}
                             href={imageUrl}
-                            disabled={!targets}
                           >
                             Download Artwork
                           </Button>
@@ -800,4 +569,4 @@ const Experience = () => {
   )
 }
 
-export default Experience
+export default EditExperience
