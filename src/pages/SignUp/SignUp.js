@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { Container, Box, Grid, Typography, Button, Link } from '@mui/material'
+import { Container, Box, Grid, Typography, Link } from '@mui/material'
+import { LoadingButton } from '@mui/lab'
 import * as yup from 'yup'
 
 import firebase from 'config/firebase'
@@ -111,18 +112,19 @@ const SignUp = ({ title, text }) => {
               />
             </Grid>
             <Grid item xs={12}>
-              <Button
+              <LoadingButton
                 type="submit"
                 variant="contained"
                 endIcon={<ArrowForward />}
                 size="large"
                 fullWidth
                 sx={{ height: '51.5px' }}
+                loading={status === 'loading'}
               >
                 <Typography letterSpacing={1} style={{ fontWeight: 800 }}>
                   Continue
                 </Typography>
-              </Button>
+              </LoadingButton>
             </Grid>
             <Grid item container justifyContent="center">
               <Typography variant="body2">

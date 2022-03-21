@@ -24,7 +24,7 @@ import Fetch from 'components/Fetch'
 import EditExperience from 'pages/EditExperience/EditExperience'
 import ExperienceNav from 'layouts/ExperienceNav/ExperienceNav'
 
-const { REACT_APP_POSTHOG_KEY } = process.env
+const { REACT_APP_POSTHOG_KEY, REACT_APP_GA } = process.env
 
 const App = () => {
   const { user, logout, initializing } = useAuth()
@@ -33,7 +33,7 @@ const App = () => {
     api_host: 'https://app.posthog.com',
   })
 
-  ReactGA.initialize('UA-136166229-3')
+  REACT_APP_GA && ReactGA.initialize(REACT_APP_GA)
 
   firebase.analytics()
 

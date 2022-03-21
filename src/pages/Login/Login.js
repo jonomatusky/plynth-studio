@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom'
 import {
   Link,
   Container,
@@ -8,10 +9,10 @@ import {
   Button,
   Divider,
 } from '@mui/material'
+import { LoadingButton } from '@mui/lab'
 import * as yup from 'yup'
 import firebase from 'config/firebase'
 import { useFormik } from 'formik'
-import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom'
 
 import { useSession } from 'hooks/use-session'
 import TextFieldWebsite from 'components/TextFieldWebsite'
@@ -29,7 +30,7 @@ const validationSchema = yup.object({
 const Login = ({ title, text }) => {
   const navigate = useNavigate()
   const location = useLocation()
-  const { logout } = useSession()
+  const { logout, status } = useSession()
 
   let from = location.state?.from?.pathname || '/'
 
@@ -151,7 +152,7 @@ const Login = ({ title, text }) => {
                 <Link
                   component={RouterLink}
                   to="/recover"
-                  color="secondary"
+                  color="text.secondary"
                   underline="hover"
                 >
                   Forgot password?
@@ -159,12 +160,13 @@ const Login = ({ title, text }) => {
               </Typography>
             </Grid>
             <Grid item xs={12}>
-              <Button
+              <LoadingButton
                 type="submit"
                 variant="contained"
                 size="large"
                 fullWidth
                 sx={{ height: '51.5px' }}
+                loading={status === 'loading'}
               >
                 <Typography
                   letterSpacing={1}
@@ -172,7 +174,7 @@ const Login = ({ title, text }) => {
                 >
                   Sign In
                 </Typography>
-              </Button>
+              </LoadingButton>
             </Grid>
             <Grid item xs={12} container alignItems="center" spacing={1}>
               <Grid item xs>
@@ -212,7 +214,11 @@ const Login = ({ title, text }) => {
                     style={{ height: '24px', width: '24px' }}
                   />
                 </Box>
-                <Typography letterSpacing={1} style={{ fontWeight: 500 }}>
+                <Typography
+                  letterSpacing={1}
+                  style={{ fontWeight: 500 }}
+                  color="text.secondary"
+                >
                   Sign in with Google
                 </Typography>
               </Button>
