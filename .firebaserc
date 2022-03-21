@@ -3,7 +3,7 @@
     "default": "plynth-2020"
   },
   "targets": {
-    "plynth-studio": {
+    "plynth-2020": {
       "hosting": {
         "production": [
           "plynth-studio"
