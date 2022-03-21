@@ -22,12 +22,12 @@ const NavBarAdmin = () => {
           alignItems="center"
           alignContent="center"
         >
-          <Box flexGrow={1}>
+          <Box flexGrow={1} color="text.secondary">
             <Button
               startIcon={<ArrowBackIos />}
               component={Link}
               to={'/'}
-              color="secondary"
+              color="inherit"
             >
               Home
             </Button>

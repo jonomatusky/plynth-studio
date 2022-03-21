@@ -17,12 +17,17 @@ const Home = () => {
 
   const handleCreateExperience = async () => {
     if (atLimit) {
+      console.log('at limit')
       setDialogIsOpen(true)
     } else {
-      const newExperience = await createExperience({
-        name: 'My New Experience',
-      })
-      navigate(`/experiences/${newExperience.id}/edit`)
+      try {
+        const newExperience = await createExperience({
+          name: 'My New Experience',
+        })
+        navigate(`/experiences/${newExperience.id}/edit`)
+      } catch (err) {
+        // handled by useThunk
+      }
     }
   }
 

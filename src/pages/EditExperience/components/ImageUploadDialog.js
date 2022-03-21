@@ -13,7 +13,6 @@ import LoadingButton from '@mui/lab/LoadingButton'
 import {
   Upload,
   FilterFrames,
-  Portrait,
   Close,
   Crop,
   Loop,
@@ -30,7 +29,6 @@ import { useRequest } from 'hooks/use-request'
 
 const demoImageName = 'Postcard+Mixtape+Vol+1+600px.jpg'
 const { REACT_APP_ASSET_URL } = process.env
-const demourl = REACT_APP_ASSET_URL + '/' + demoImageName
 
 const imageMinWidthDimension = 1200
 
@@ -38,7 +36,6 @@ const ImageUploadDialog = ({
   submitImage,
   imageUrl,
   videoUrl,
-  videoDuration,
   open,
   onClose,
 }) => {
@@ -72,27 +69,29 @@ const ImageUploadDialog = ({
     const Icon = icon
 
     return (
-      <Button
-        onClick={() => setValue(index)}
-        fullWidth
-        disabled={disabled}
-        color={value === index ? 'primary' : 'secondary'}
-      >
-        <Grid container justifyContent="center">
-          <Grid item xs={12}>
-            <Icon />
+      <Box color="text.secondary">
+        <Button
+          onClick={() => setValue(index)}
+          fullWidth
+          disabled={disabled}
+          color={value === index ? 'primary' : 'inherit'}
+        >
+          <Grid container justifyContent="center">
+            <Grid item xs={12}>
+              <Icon />
+            </Grid>
+            <Grid item xs={12}>
+              <Typography
+                variant="subtitle2"
+                lineHeight={1}
+                sx={{ textTransform: 'none' }}
+              >
+                {label}
+              </Typography>
+            </Grid>
           </Grid>
-          <Grid item xs={12}>
-            <Typography
-              variant="subtitle2"
-              lineHeight={1}
-              sx={{ textTransform: 'none' }}
-            >
-              {label}
-            </Typography>
-          </Grid>
-        </Grid>
-      </Button>
+        </Button>
+      </Box>
     )
   }
 
@@ -127,20 +126,22 @@ const ImageUploadDialog = ({
         }}
       >
         <input {...getInputProps()} />
-        <Button
-          color="secondary"
-          sx={{
-            width: '100%',
-            height: '100%',
-            textAlign: 'center',
-            textTransform: 'none',
-          }}
-        >
-          <Box>
-            <Upload color="secondary" sx={{ fontSize: 40 }} />
-            <Typography>Drop here or click to select</Typography>
-          </Box>
-        </Button>
+        <Box color="text.secondary" height="100%">
+          <Button
+            color="inherit"
+            sx={{
+              width: '100%',
+              height: '100%',
+              textAlign: 'center',
+              textTransform: 'none',
+            }}
+          >
+            <Box>
+              <Upload color="text.secondary" sx={{ fontSize: 40 }} />
+              <Typography>Drop here or click to select</Typography>
+            </Box>
+          </Button>
+        </Box>
       </div>
     )
   }
@@ -166,60 +167,70 @@ const ImageUploadDialog = ({
   // const videoDuration = videoRef.current ? videoRef.current.duration : 0
   // const videoDuration = 75.512
 
-  const videoRef = useRef()
-
-  const TimeSlider = ({ onChange }) => {
-    const [sliderValue, setSliderValue] = useState(0)
-
-    const handleChangeTime = (e, value) => {
-      setSliderValue(value)
-      onChange(value)
-    }
-
-    return (
-      <>
-        {videoDuration && videoUrl && (
-          <Slider
-            value={sliderValue}
-            onChange={handleChangeTime}
-            min={0}
-            max={Math.round(videoDuration * 30)}
-            step={1}
-          />
-        )}
-      </>
-    )
-  }
-
-  const handleChangeTime = value => {
-    if (videoRef.current) {
-      videoRef.current.currentTime = value / 30
-    }
-  }
-
-  const getFrame = () => {
-    const video = document.getElementById('piece-video')
-    const format = 'jpeg'
-    const quality = 0.92
-
-    var canvas = document.createElement('CANVAS')
-
-    const width = video.videoWidth
-    const height = video.videoHeight
-
-    canvas.width = width
-    canvas.height = height
-
-    canvas.getContext('2d').drawImage(video, 0, 0)
-
-    var dataUri = canvas.toDataURL('image/' + format, quality)
-
-    setImageToCrop({ src: dataUri, width, height })
-
-    canvas = null
-  }
-
   const ContentUpload = () => {
+    const videoRef = useRef()
+    const [videoDuration, setVideoDuration] = useState()
+
+    const duration = videoRef.current ? videoRef.current.duration : null
+
+    useEffect(() => {
+      if (!isNaN(duration)) {
+        setVideoDuration(duration)
+      }
+    }, [duration])
+
+    const TimeSlider = ({ onChange }) => {
+      const [sliderValue, setSliderValue] = useState(0)
+
+      const handleChangeTime = (e, value) => {
+        setSliderValue(value)
+        onChange(value)
+      }
+
+      return (
+        <>
+          {!!videoDuration && !!videoUrl && (
+            <Slider
+              value={sliderValue}
+              onChange={handleChangeTime}
+              min={0}
+              max={Math.round(videoDuration * 30)}
+              step={1}
+            />
+          )}
+        </>
+      )
+    }
+
+    const handleChangeTime = value => {
+      if (videoRef.current) {
+        videoRef.current.currentTime = value / 30
+      }
+    }
+
+    const getFrame = () => {
+      // const video = document.getElementById('piece-video')
+      const video = videoRef.current
+      const format = 'jpeg'
+      const quality = 0.92
+
+      var canvas = document.createElement('CANVAS')
+
+      const width = video.videoWidth
+      const height = video.videoHeight
+
+      canvas.width = width
+      canvas.height = height
+
+      canvas.getContext('2d').drawImage(video, 0, 0)
+
+      var dataUri = canvas.toDataURL('image/' + format, quality)
+
+      setImageToCrop({ src: dataUri, width, height })
+
+      canvas = null
+    }
+
     return (
       <>
         <DialogTitle>
@@ -239,13 +250,7 @@ const ImageUploadDialog = ({
         </DialogTitle>
 
         <Box width="100%" display="flex">
-          <Box
-            width="144px"
-            pb={2}
-            display="flex"
-            flexDirection="column"
-            color=""
-          >
+          <Box width="144px" pb={2} display="flex" flexDirection="column">
             <OptionButton index={0} icon={Upload} label="Upload" />
 
             {/* <OptionButton index={1} icon={CameraAlt} label="Take a photo" /> */}
@@ -257,7 +262,7 @@ const ImageUploadDialog = ({
               disabled={!videoUrl}
             />
 
-            <OptionButton index={3} icon={Portrait} label="Use one of ours" />
+            {/* <OptionButton index={3} icon={Portrait} label="Use one of ours" /> */}
           </Box>
           <Box flexGrow={1}>
             <Box width="100%" pr={2} pb={2}>
@@ -298,8 +303,7 @@ const ImageUploadDialog = ({
                       justifyContent="center"
                     >
                       <video
-                        id="piece-video"
-                        src={videoUrl}
+                        src={videoUrl + '?x-request=html'}
                         crossOrigin="anonymous"
                         ref={videoRef}
                         style={{
@@ -307,13 +311,14 @@ const ImageUploadDialog = ({
                           maxHeight: '360px',
                           objectFit: 'contain',
                         }}
-                        muted
+                        muted="muted"
                         alt="Piece"
+                        onLoadedMetadata={() => setVideoDuration(duration)}
                       />
                     </Box>
                   </Box>
                 )}
-                {value === 3 && (
+                {/* {value === 3 && (
                   <img
                     src={demourl}
                     style={{
@@ -323,7 +328,7 @@ const ImageUploadDialog = ({
                     }}
                     alt="Piece"
                   />
-                )}
+                )} */}
               </Box>
             </Box>
           </Box>
@@ -698,9 +703,14 @@ const ImageUploadDialog = ({
         </Box>
 
         <DialogActions>
-          <Box width="100%" display="flex" justifyContent="space-between">
+          <Box
+            width="100%"
+            display="flex"
+            justifyContent="space-between"
+            color="text.secondary"
+          >
             <Button
-              color="secondary"
+              color="inherit"
               endIcon={<Loop />}
               onClick={handleReplace}
               // sx={{
@@ -721,14 +731,7 @@ const ImageUploadDialog = ({
   }
 
   return (
-    <Dialog
-      open={open}
-      onClose={(event, reason) => {
-        if (reason !== 'backdropClick') {
-          onClose()
-        }
-      }}
-    >
+    <Dialog open={open} onClose={onClose}>
       {!isReplacing ? (
         <ContentReplace />
       ) : !!imageToCrop.src ? (

@@ -101,138 +101,111 @@ const AddMediaButton = ({
         }
         position="bottom"
       >
-        <Box display="flex" flexWrap="wrap" width="160px" mt={1}>
-          <Card elevation={0} variant="outlined">
-            <CardActionArea
-              sx={{ padding: '8px' }}
-              onClick={handleClick}
-              disabled={disabled}
+        <Card elevation={0} variant="outlined">
+          <CardActionArea
+            sx={{ padding: '8px' }}
+            onClick={handleClick}
+            disabled={disabled}
+          >
+            <Box
+              height="200px"
+              width="100%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              flexWrap="wrap"
             >
               <Box
-                height="144px"
-                width="144px"
+                width="100%"
+                height="200px"
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
                 flexWrap="wrap"
+                textAlign="center"
               >
-                <Box
-                  width="144px"
-                  height="144px"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  flexWrap="wrap"
-                >
-                  <Box textAlign="center">
-                    {mediaType === 'image' ? (
+                {mediaType === 'image' ? (
+                  <>
+                    {imageSrc ? (
                       <>
-                        {imageSrc ? (
-                          <>
-                            <Box
-                              width="144px"
-                              height="144px"
-                              display="flex"
-                              alignItems="center"
-                              justifyContent="center"
-                            >
-                              <Image
-                                src={imageSrc}
-                                style={{ maxHeight: '128px', maxWidth: '100%' }}
-                              />
-                            </Box>
-                            {/* <Box
-                            width="144px"
-                            height="20px"
-                            display="flex"
-                            justifyContent="space-between"
-                            alignItems="center"
-                            overflow="hidden"
-                          >
-                            <Typography variant="caption">{aspect}</Typography>
-                          </Box> */}
-                          </>
-                        ) : (
-                          <>
-                            <AddPhotoAlternate
-                              sx={{ fontSize: 60 }}
-                              color="primary"
-                            />
-                            <Typography
-                              fontSize="large"
-                              sx={{ textTransform: 'none' }}
-                              color="primary"
-                            >
-                              <b>Add Image</b>
-                            </Typography>
-                          </>
-                        )}
+                        <Box
+                          width="100%"
+                          height="200px"
+                          display="flex"
+                          alignItems="center"
+                          justifyContent="center"
+                        >
+                          <Image
+                            src={imageSrc}
+                            style={{ maxHeight: '184px', maxWidth: '100%' }}
+                          />
+                        </Box>
                       </>
                     ) : (
-                      <>
-                        {videoSrc ? (
-                          <>
-                            <Box
-                              width="144px"
-                              height="144px"
-                              display="flex"
-                              alignItems="center"
-                              justifyContent="center"
-                              position="relative"
-                            >
-                              <Box
-                                width="100%"
-                                height="100%"
-                                zIndex={10}
-                                color="white"
-                                display="flex"
-                                justifyContent="center"
-                                alignItems="center"
-                                position="absolute"
-                              >
-                                <PlayArrow color="inherit" fontSize="large" />
-                              </Box>
-                              <ReactPlayer
-                                ref={playerRef}
-                                url={videoSrc}
-                                muted
-                                loop
-                                style={{ maxHeight: '128px', maxWidth: '100%' }}
-                              />
-                            </Box>
-                            {/* <Box
-                            width="144px"
-                            height="20px"
-                            display="flex"
-                            justifyContent="space-between"
-                            alignItems="center"
-                            overflow="hidden"
-                          >
-                            <Typography variant="caption">
-                              {!!videoDuration ? `${videoDuration}sec` : ''}
-                            </Typography>
-                          </Box> */}
-                          </>
-                        ) : (
-                          <>
-                            <VideoCall sx={{ fontSize: 60 }} color="primary" />
-                            <Typography
-                              fontSize="large"
-                              sx={{ textTransform: 'none' }}
-                              color="primary"
-                            >
-                              <b>Add Video</b>
-                            </Typography>
-                          </>
-                        )}
-                      </>
+                      <Box display="flex" alignItems="center">
+                        <Typography
+                          fontSize="large"
+                          sx={{ textTransform: 'none' }}
+                          color="primary"
+                        >
+                          <b>Add Image</b>
+                        </Typography>
+                        <AddPhotoAlternate fontSize="large" color="primary" />
+                      </Box>
                     )}
-                  </Box>
-                </Box>
+                  </>
+                ) : (
+                  <>
+                    {videoSrc ? (
+                      <>
+                        <Box
+                          width="100%"
+                          height="200px"
+                          display="flex"
+                          alignItems="center"
+                          justifyContent="center"
+                          position="relative"
+                        >
+                          <Box
+                            width="100%"
+                            height="100%"
+                            zIndex={10}
+                            color="white"
+                            display="flex"
+                            justifyContent="center"
+                            alignItems="center"
+                            position="absolute"
+                          >
+                            <PlayArrow color="inherit" fontSize="large" />
+                          </Box>
+                          <ReactPlayer
+                            ref={playerRef}
+                            url={videoSrc}
+                            muted
+                            loop
+                            style={{ maxHeight: '184px', maxWidth: '100%' }}
+                            crossOrigin="anonymous"
+                          />
+                        </Box>
+                      </>
+                    ) : (
+                      <Box display="flex" alignItems="center">
+                        <Typography
+                          fontSize="large"
+                          sx={{ textTransform: 'none' }}
+                          color="primary"
+                        >
+                          <b>Add Video</b>
+                        </Typography>
+                        <VideoCall fontSize="large" color="primary" />
+                      </Box>
+                    )}
+                  </>
+                )}
               </Box>
-            </CardActionArea>
-          </Card>
-        </Box>
+            </Box>
+          </CardActionArea>
+        </Card>
       </OnboardingTooltip>
     </>
   )

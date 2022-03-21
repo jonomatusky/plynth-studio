@@ -5,6 +5,7 @@ import { useAuth } from 'hooks/use-auth'
 import firebase from 'config/firebase'
 import posthog from 'posthog-js'
 import ReactGA from 'react-ga'
+import 'mind-ar/dist/mindar-image.prod.js'
 
 import PrivateRoute from 'routes/PrivateRoute'
 import Login from 'pages/Login/Login'
@@ -21,6 +22,7 @@ import PlansDialog from 'components/PlansDialog'
 import PostCheckoutDialog from 'components/PostCheckoutDialog'
 import Fetch from 'components/Fetch'
 import EditExperience from 'pages/EditExperience/EditExperience'
+import ExperienceNav from 'layouts/ExperienceNav/ExperienceNav'
 
 const { REACT_APP_POSTHOG_KEY } = process.env
 
@@ -47,13 +49,15 @@ const App = () => {
         <Routes>
           <Route path="/" element={<PrivateRoute component={AdminNav} />}>
             <Route path="/" element={<Home />} />
-            <Route path="/experiences/:id/edit" element={<EditExperience />} />
+          </Route>
+          <Route path="/" element={<PrivateRoute component={AccountNav} />}>
+            <Route path="/account" element={<Account />} />
           </Route>
           <Route
-            path="/account"
-            element={<PrivateRoute component={AccountNav} />}
+            path="/experiences/:id"
+            element={<PrivateRoute component={ExperienceNav} />}
           >
-            <Route path="/account" element={<Account />} />
+            <Route path="/experiences/:id/edit" element={<EditExperience />} />
           </Route>
           <Route path="/" element={<PublicNav right={<></>} hideFooter />}>
             <Route path="/login" element={<Login />} />

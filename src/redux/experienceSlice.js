@@ -118,6 +118,7 @@ const experiencesSlice = createSlice({
       state.createStatus = 'failed'
       state.error = action.error.message
     },
+
     [deleteExperience.fulfilled]: (state, action) => {
       const id = action.payload
       const matchingIndex = state.experiences.findIndex(

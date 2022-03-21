@@ -4,7 +4,7 @@ import { Card, Box, TextField, CardActionArea } from '@mui/material'
 
 import useExperienceStore from 'hooks/store/use-experience-store'
 import Image from 'components/Image'
-import ItemName from './ItemName'
+import ItemName from 'components/ItemName'
 import { VideoCameraBack } from '@mui/icons-material'
 
 const ExperienceItem = ({ exp }) => {

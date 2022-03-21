@@ -331,8 +331,9 @@ const VideoUploadDialog = ({ submit, videoUrl, open, onClose }) => {
           justifyContent="space-between"
           alignContent="center"
           p={2}
+          color="text.secondary"
         >
-          <Button color="secondary" endIcon={<Loop />} onClick={handleReplace}>
+          <Button color="inherit" endIcon={<Loop />} onClick={handleReplace}>
             Replace
           </Button>
           <Button variant="contained" onClick={handleClose}>

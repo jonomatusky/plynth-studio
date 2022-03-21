@@ -1,101 +1,49 @@
 import React, { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
-import { Grid, Box, Container, Button, Paper, Typography } from '@mui/material'
+import { useParams } from 'react-router-dom'
 import {
-  Link as LinkIcon,
-  People,
-  PhoneIphone,
-  VideoCameraBack,
-  Download,
-  FilterNone,
-  ArrowForward,
-  Computer,
-} from '@mui/icons-material'
+  Grid,
+  Box,
+  Container,
+  Paper,
+  Typography,
+  Switch,
+  CircularProgress,
+  Button,
+} from '@mui/material'
 import QRCode from 'qrcode.react'
-import copy from 'copy-to-clipboard'
 import { isMobile, isTablet } from 'react-device-detect'
 
 import useExperienceStore from 'hooks/store/use-experience-store'
+import useDialog from 'hooks/use-dialog'
 
+import DeleteDialog from './components/DeleteDialog'
 import AddMediaButton from './components/AddMediaButton'
 import WelcomeDialog from './components/WelcomeDialog'
 import { useRequest } from 'hooks/use-request'
 import { useAlertStore } from 'hooks/store/use-alert-store'
 import { loadImgAsync } from 'util/imageHandling'
-import DownloadQR from 'components/DownloadQr'
 import ImageUploadDialog from './components/ImageUploadDialog'
 import VideoUploadDialog from './components/VideoUploadDialog'
+import AddImage from './components/AddImage'
+import ExperienceForm from './components/ExperienceForm'
+import { DeleteForever } from '@mui/icons-material'
 
 const { REACT_APP_PUBLIC_URL } = process.env
 
 const EditExperience = () => {
+  const { isOpen, handleOpen, handleClose } = useDialog()
   const { selectExperience, updateExperience, experiences, updateStatus } =
     useExperienceStore()
   const { setError } = useAlertStore()
   const { id } = useParams()
   const experiencePage = !!id ? REACT_APP_PUBLIC_URL + '/p/' + id : null
 
-  const experience = selectExperience(id)
-  const { targetUrl, objects } = experience
+  const experience = selectExperience(id) || {}
+  const { targetUrl, objects, hideLinks } = experience || {}
   const object = (objects || [])[0] || {}
   const { posterUrl: imageUrl, assetUrl: videoUrl } = object
 
   // const previewPage = !!media.id ? `/preview/${id}/${media.id}` : null
-
-  const handleUpdateExperience = ({ name, href, label, color }) => {
-    const links = [
-      {
-        href,
-        label,
-        color,
-      },
-    ]
-
-    updateExperience({ id, name, links })
-  }
-
-  const DisplayCard = () => {
-    return (
-      <Box
-        backgroundColor="white"
-        border="2px solid #ddd"
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        mt={6}
-        sx={{
-          transform: 'rotate(3deg)',
-          width: { xs: '350px', lg: '450px' },
-        }}
-        mr={2}
-        boxShadow="5px 5px 15px #00000040"
-        position="relative"
-      >
-        {!imageUrl && (
-          <Box color="#dddddd" textAlign="center">
-            <VideoCameraBack color="inherit" sx={{ fontSize: 100 }} />
-            <Typography>
-              <b>Your Preview Here</b>
-            </Typography>
-          </Box>
-        )}
-        {imageUrl && (
-          <img
-            src={imageUrl}
-            width="100%"
-            height="100%"
-            alt="preview"
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              zIndex: 10,
-            }}
-          />
-        )}
-      </Box>
-    )
-  }
 
   const showOnboarding = experiences.length === 1 && !isMobile && !isTablet
   const showWelcomeDialogAtStart =
@@ -116,31 +64,6 @@ const EditExperience = () => {
 
   const { request } = useRequest()
 
-  const CopyButton = () => {
-    const [isCopied, setIsCopied] = useState(false)
-
-    useEffect(() => {
-      const timer = setTimeout(() => setIsCopied(false), 2000)
-      return () => clearTimeout(timer)
-    }, [isCopied])
-
-    const handleCopy = () => {
-      setIsCopied(true)
-      copy(experiencePage)
-    }
-
-    return (
-      <Button
-        size="small"
-        color="secondary"
-        endIcon={<FilterNone />}
-        onClick={handleCopy}
-      >
-        {isCopied ? 'Copied!' : 'Copy Link'}
-      </Button>
-    )
-  }
-
   const [videoDialogIsOpen, setVideoDialogIsOpen] = useState(false)
   const [imageDialogIsOpen, setImageDialogIsOpen] = useState(false)
 
@@ -150,11 +73,13 @@ const EditExperience = () => {
     !videoDialogIsOpen &&
     !imageDialogIsOpen
 
-  const handleUpdateImage = image => {
+  const handleUpdateImage = ({ filepath, width, height }) => {
     let newObject = { ...object }
-    newObject.poster = image
+    newObject.poster = filepath
+    newObject.width = width
+    newObject.height = height
 
-    updateExperience({ id, objects: [newObject] })
+    updateExperience({ id, target: null, objects: [newObject] })
   }
 
   const handleUpdateVideo = video => {
@@ -165,27 +90,40 @@ const EditExperience = () => {
   }
 
   useEffect(() => {
-    if (imageUrl && videoUrl && updateStatus === 'idle' && !isLoading) {
+    if (
+      imageUrl &&
+      !targetUrl &&
+      updateStatus === 'idle' &&
+      !isLoading &&
+      !videoDialogIsOpen &&
+      !imageDialogIsOpen
+    ) {
+      setIsLoading(true)
       const getImageTargets = async () => {
-        setIsLoading(true)
-
         try {
           const response = await request({
             url: imageUrl,
             responseType: 'blob',
           })
 
-          const blob = response.data
-          const src = await URL.createObjectURL(blob)
+          const blob = await response
+          const src = URL.createObjectURL(blob)
 
           let img = await loadImgAsync(src)
           URL.revokeObjectURL(src)
 
-          const compiler = new window.MINDAR.IMAGE.Compiler()
-          await compiler.compileImageTargets(
-            [img]
-            // , progress => {setPercent(progress.toFixed(0))}
-          )
+          let compiler
+
+          try {
+            compiler = new window.MINDAR.IMAGE.Compiler()
+            await compiler.compileImageTargets([img], progress => {
+              // console.log(progress.toFixed(0))
+              return
+              // setPercent(progress.toFixed(0))
+            })
+          } catch (err) {
+            console.log(err)
+          }
 
           const exportedBuffer = await compiler.exportData()
           var targetBlob = new Blob([exportedBuffer])
@@ -207,9 +145,10 @@ const EditExperience = () => {
             timeout: 100000,
           })
 
-          await updateExperience({ target: filepath })
+          await updateExperience({ id, target: filepath })
           setIsLoading(false)
         } catch (err) {
+          console.log(err)
           setError({
             message:
               'Sorry, there was an error creating your experience. Please try again.',
@@ -221,7 +160,6 @@ const EditExperience = () => {
       getImageTargets()
     }
   }, [
-    videoUrl,
     imageUrl,
     targetUrl,
     id,
@@ -230,7 +168,22 @@ const EditExperience = () => {
     updateExperience,
     updateStatus,
     isLoading,
+    imageDialogIsOpen,
+    videoDialogIsOpen,
   ])
+
+  const [showLinkForm, setShowLinkForm] = useState(!hideLinks)
+
+  const handleShowLinks = e => {
+    const checked = e.target.checked
+
+    setShowLinkForm(checked)
+    updateExperience({ id, hideLinks: !checked })
+  }
+
+  useEffect(() => {
+    setShowLinkForm(!hideLinks)
+  }, [hideLinks])
 
   return (
     <>
@@ -253,304 +206,177 @@ const EditExperience = () => {
         open={welcomeDialogIsOpen}
         onClose={() => setWelcomeDialogIsOpen(false)}
       />
-      <Box
-        height="calc(100vh - 48px)"
-        width="100%"
-        overflow="auto"
-        display="flex"
-        alignContent="center"
-      >
-        <Container disableGutters maxWidth="lg">
-          <Grid container justifyContent="flex-start">
-            <Grid
-              item
-              sm={12}
-              container
-              justifyContent="center"
-              sx={{ display: { xs: 'flex', sm: 'none' } }}
-            >
-              <Grid item mt={2} xs={11}>
+
+      <DeleteDialog id={id} open={isOpen} onClose={handleClose} />
+
+      <Container maxWidth="lg">
+        <Grid container justifyContent="center" spacing={2} pt={2}>
+          <Grid
+            item
+            xs={12}
+            md={4}
+            container
+            spacing={2}
+            alignContent="flex-start"
+          >
+            <Grid item xs={12}>
+              <Paper>
+                <Box padding={3}>
+                  <Grid container spacing={1}>
+                    {/* <Grid item xs={12}>
+                        <Typography variant="h5">
+                          <b>Video</b>
+                        </Typography>
+                      </Grid> */}
+                    <Grid item xs={12}>
+                      <AddMediaButton
+                        mediaType="video"
+                        videoSrc={videoUrl}
+                        imageSrc={imageUrl}
+                        showTooltips={showTooltips}
+                        handleClick={() => setVideoDialogIsOpen(true)}
+                      />
+                    </Grid>
+                  </Grid>
+                </Box>
+              </Paper>
+            </Grid>
+            <Grid item xs={12}>
+              <Paper>
+                <Box padding={3} pt={2}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                      <Box display="flex">
+                        <Box pt={1}>
+                          <Typography>
+                            <b>Include a Button</b>
+                          </Typography>
+                          <Typography fontSize={14}>
+                            Add a "call to action" button at the bottom of your
+                            experience.
+                          </Typography>
+                        </Box>
+                        <Switch
+                          checked={showLinkForm}
+                          onChange={handleShowLinks}
+                        />
+                      </Box>
+                    </Grid>
+
+                    {showLinkForm && (
+                      <Grid item xs={12}>
+                        <ExperienceForm experience={experience} />
+                      </Grid>
+                    )}
+                  </Grid>
+                </Box>
+              </Paper>
+            </Grid>
+            <Grid item xs={12}>
+              <Box color="text.secondary">
+                <Button
+                  endIcon={<DeleteForever />}
+                  onClick={handleOpen}
+                  fullWidth
+                  color="inherit"
+                >
+                  Delete Experience
+                </Button>
+              </Box>
+            </Grid>
+          </Grid>
+          <Grid
+            item
+            md={8}
+            xs={12}
+            // container
+            // justifyContent="flex-end"
+            // alignContent="stretch"
+            // alignItems="stretch"
+            // spacing={2}
+          >
+            <Box display="flex">
+              <Box flexGrow={1}>
                 <Paper>
-                  <Box padding={2}>
+                  <Box padding={3}>
                     <Grid container spacing={2} justifyContent="center">
-                      <Grid item xs={12} textAlign="center">
-                        <Computer sx={{ fontSize: 60 }} color="primary" />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <Typography variant="h6" textAlign="center">
-                          Switch to Desktop
+                      {/* <Grid item xs={12}>
+                        <Typography variant="h5">
+                          <b>Target Image</b>
                         </Typography>
-                      </Grid>
+                      </Grid> */}
                       <Grid item xs={12}>
-                        <Typography>
-                          Please visit plynth.com on your computer to create
-                          your first interactive experience. After you create
-                          it, you can return to your mobile device to try it
-                          out.
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} pb={2} mt={2}>
-                        <Button
-                          variant="contained"
-                          component={Link}
-                          to="/admin/pieces"
-                          fullWidth
-                        >
-                          Go Home
-                        </Button>
+                        <AddImage
+                          imageSrc={imageUrl}
+                          videoSrc={videoUrl}
+                          showTooltips={showTooltips}
+                          handleClick={() => setImageDialogIsOpen(true)}
+                        />
                       </Grid>
                     </Grid>
                   </Box>
                 </Paper>
-              </Grid>
-            </Grid>
-            <Grid
-              item
-              sm={12}
-              md={7}
-              container
-              justifyContent="center"
-              sx={{ display: { xs: 'none', sm: 'flex' } }}
-            >
-              <Grid item xs={11} lg={8}>
-                <Box mt={4} mb={4}>
-                  <Paper>
-                    <Box padding={4} pb={2}>
+              </Box>
+
+              <Box
+                flexGrow={0}
+                pl={2}
+                sx={{ display: { xs: 'none', md: 'block' } }}
+              >
+                <Paper>
+                  <Box padding={2}>
+                    <Box width="100px">
                       <Box
                         display="flex"
-                        justifyContent="space-around"
                         alignItems="center"
-                        width="100%"
-                        flexWrap="wrap"
+                        justifyContent="center"
                       >
                         <Box
-                          width="100%"
-                          display="flex"
-                          justifyContent="space-around"
-                          alignItems="center"
-                          flexWrap="wrap"
+                          position="absolute"
+                          sx={{ display: isLoading ? 'block' : 'none' }}
                         >
-                          <AddMediaButton
-                            mediaType="video"
-                            // updateMedia={handleUpdateMedia}
-                            // updateMedia={handleUpdateVideo}
-                            videoSrc={videoUrl}
-                            imageSrc={imageUrl}
-                            showTooltips={showTooltips}
-                            handleClick={() => setVideoDialogIsOpen(true)}
-                          />
-
-                          <LinkIcon
-                            fontSize="large"
-                            color={targetUrl ? 'primary' : 'secondary'}
-                            sx={{ display: { xs: 'none', sm: 'block' } }}
-                          />
-
-                          <AddMediaButton
-                            mediaType="image"
-                            // updateMedia={handleUpdateMedia}
-                            imageSrc={imageUrl}
-                            videoSrc={videoUrl}
-                            showTooltips={showTooltips}
-                            handleClick={() => setImageDialogIsOpen(true)}
-                          />
+                          <CircularProgress color="secondary" />
                         </Box>
-                        <Box
-                          width="100%"
-                          color={targetUrl ? 'text.primary' : '#cccccc'}
-                          sx={{ display: { xs: 'none', md: 'flex' } }}
-                        >
-                          <Box flexGrow={1} display="flex" flexWrap="wrap">
-                            <Box
-                              flexGrow={1}
-                              display="flex"
-                              alignItems="flex-start"
-                            >
-                              <Box
-                                minWidth="60px"
-                                textAlign="center"
-                                display="flex"
-                                justifyContent="center"
-                                pt="6px"
-                              >
-                                <PhoneIphone
-                                  sx={{ fontSize: 60 }}
-                                  color="inherit"
-                                />
-                              </Box>
-                              <Box flexGrow={1}>
-                                <Typography variant="h5" color="inherit">
-                                  <b>Try it out</b>
-                                </Typography>
-                                <Typography variant="body2" color="inherit">
-                                  Scan the QR code and hold your phone up to the
-                                  image to the right.
-                                </Typography>
-                              </Box>
-                            </Box>
-                            <Box
-                              flexGrow={1}
-                              display="flex"
-                              alignItems="flex-start"
-                              mt={1}
-                            >
-                              <Box
-                                minWidth="60px"
-                                textAlign="center"
-                                display="flex"
-                                justifyContent="center"
-                              >
-                                <People sx={{ fontSize: 40 }} color="inherit" />
-                              </Box>
-                              <Box flexGrow={1}>
-                                <Typography variant="h6" color="inherit">
-                                  Share with a friend
-                                </Typography>
-                                <Typography variant="body2" color="inherit">
-                                  Send a link to the preview page so they can
-                                  try it out themselves.
-                                </Typography>
-                              </Box>
-                            </Box>
-                            <Box
-                              flexGrow={1}
-                              display="flex"
-                              alignItems="flex-start"
-                              mt={1}
-                            >
-                              <Box
-                                minWidth="52px"
-                                textAlign="center"
-                                display="flex"
-                                justifyContent="center"
-                              ></Box>
-                              {/* <Box flexGrow={1}>
-                                  <Typography>
-                                    <Button
-                                      sx={{ textTransform: 'none' }}
-                                      endIcon={<Launch />}
-                                      color="inherit"
-                                      href={previewPage}
-                                      target="_blank"
-                                      disabled={!targets}
-                                    >
-                                      View Preview Page
-                                    </Button>
-                                  </Typography>
-                                </Box> */}
-                            </Box>
-                          </Box>
-                          <Box
-                            display="flex"
-                            justifyContent="center"
-                            alignItems="flex-start"
-                            flexWrap="wrap"
-                            height="100%"
-                            ml={1}
-                          >
-                            <Box width="120px" height="120px" m={1} mb={0}>
-                              <QRCode
-                                size={120}
-                                id="qr"
-                                value={experiencePage}
-                              />
-                            </Box>
-                            {targetUrl && (
-                              <>
-                                <Box
-                                  display="flex"
-                                  justifyContent="center"
-                                  alignItems="center"
-                                  pt={1}
-                                >
-                                  <Typography>
-                                    <b>Scan to try</b>
-                                  </Typography>
-                                  <ArrowForward fontSize="small" />
-                                </Box>
-                                <CopyButton />
-                              </>
-                            )}
-                          </Box>
-                        </Box>
-                        <Box
-                          width="100%"
-                          display="flex"
-                          justifyContent="center"
-                        >
-                          <Box
-                            width="400px"
-                            mt={1}
-                            display="flex"
-                            alignItems="center"
-                            justifyContent="center"
-                          >
-                            <Typography
-                              variant="caption"
-                              textAlign="center"
-                              mt={2}
-                            >
-                              Ready to print? Download the QR code to include in
-                              your designs.
-                            </Typography>
-                          </Box>
-                        </Box>
-                        <Box
-                          width="100%"
-                          display="flex"
-                          justifyContent="center"
-                        >
-                          <Box width="320px" mt={1}>
-                            <DownloadQR qrValue={experiencePage} fileName={id}>
-                              <Button
-                                variant="contained"
-                                fullWidth
-                                endIcon={<Download />}
-                              >
-                                Download QR Code
-                              </Button>
-                            </DownloadQR>
-                          </Box>
-                        </Box>
-                        <Box width="320px" mb={1} mt={1}>
-                          <Button
-                            fullWidth
-                            endIcon={<Download />}
-                            href={imageUrl}
-                          >
-                            Download Artwork
-                          </Button>
-                        </Box>
-                        {/* <Box width="320px" mt={3} mb={1}>
-                            <Button variant="contained" fullWidth disabled>
-                              <b>Download Print Files</b>
-                            </Button>
-                          </Box>
-                          <Box color="#cccccc">
-                            <Typography variant="caption">
-                              Need help printing? Check out our list of{' '}
-                              <u>local and national printers</u>
-                            </Typography>
-                          </Box> */}
+                        <QRCode
+                          size={100}
+                          id="qr"
+                          value={experiencePage}
+                          fgColor={
+                            isLoading || !imageUrl || !videoUrl
+                              ? '#00000022'
+                              : '#000000'
+                          }
+                        />
                       </Box>
+                      <Typography
+                        variant="h6"
+                        color={
+                          isLoading || !imageUrl || !videoUrl
+                            ? 'text.disabled'
+                            : 'text.primary'
+                        }
+                        pt={1}
+                      >
+                        <b>Preview</b>
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color={
+                          isLoading || !imageUrl || !videoUrl
+                            ? 'text.disabled'
+                            : 'text.primary'
+                        }
+                      >
+                        Scan the QR code and hold your phone up to the image.
+                      </Typography>
                     </Box>
-                  </Paper>
-                </Box>
-              </Grid>
-            </Grid>
-            <Grid item md={5} sx={{ display: { xs: 'none', md: 'block' } }}>
-              <Box
-                width="100%"
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-              >
-                <DisplayCard />
+                  </Box>
+                </Paper>
               </Box>
-            </Grid>
+            </Box>
           </Grid>
-        </Container>
-      </Box>
+        </Grid>
+      </Container>
       {/* <Dialog
         onClose={handleRemoveClose}
         aria-labelledby="remove-dialog-title"

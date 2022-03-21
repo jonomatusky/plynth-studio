@@ -30,7 +30,7 @@ const DownloadQR = ({ children, qrValue, fileName }) => {
       <QRCode
         hidden
         id="qr-gen"
-        value={qrValue}
+        value={qrValue || ''}
         size={290}
         includeMargin={true}
       />
