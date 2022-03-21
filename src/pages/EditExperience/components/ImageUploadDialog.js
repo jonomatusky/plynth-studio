@@ -39,7 +39,7 @@ const ImageUploadDialog = ({
   open,
   onClose,
 }) => {
-  const [value, setValue] = useState(0)
+  const [value, setValue] = useState(!!videoUrl ? 2 : 0)
   const [isReplacing, setIsReplacing] = useState(!imageUrl)
 
   const [image, setImage] = useState({
@@ -47,6 +47,7 @@ const ImageUploadDialog = ({
     width: null,
     height: null,
   })
+
   const [imageToCrop, setImageToCrop] = useState({
     src: null,
     width: null,
@@ -78,7 +79,9 @@ const ImageUploadDialog = ({
         >
           <Grid container justifyContent="center">
             <Grid item xs={12}>
-              <Icon />
+              <Box>
+                <Icon />
+              </Box>
             </Grid>
             <Grid item xs={12}>
               <Typography
@@ -243,7 +246,7 @@ const ImageUploadDialog = ({
                 variant="secondary"
                 size="small"
               >
-                Cancel
+                Close
               </Button>
             </Box>
           </Box>
@@ -251,16 +254,16 @@ const ImageUploadDialog = ({
 
         <Box width="100%" display="flex">
           <Box width="144px" pb={2} display="flex" flexDirection="column">
-            <OptionButton index={0} icon={Upload} label="Upload" />
-
-            {/* <OptionButton index={1} icon={CameraAlt} label="Take a photo" /> */}
-
             <OptionButton
               index={2}
               icon={FilterFrames}
               label="Choose frame from video"
               disabled={!videoUrl}
             />
+
+            <OptionButton index={0} icon={Upload} label="Upload" />
+
+            {/* <OptionButton index={1} icon={CameraAlt} label="Take a photo" /> */}
 
             {/* <OptionButton index={3} icon={Portrait} label="Use one of ours" /> */}
           </Box>

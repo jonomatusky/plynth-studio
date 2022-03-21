@@ -11,10 +11,10 @@ import {
 } from '@mui/material'
 
 import {
-  AutoFixHigh,
+  Image,
   Close,
-  Download,
   VideoCameraBack,
+  QrCodeScanner,
 } from '@mui/icons-material'
 
 const WelcomeDialog = ({ open, onClose }) => {
@@ -46,24 +46,22 @@ const WelcomeDialog = ({ open, onClose }) => {
               <VideoCameraBack sx={{ fontSize: 80 }} color="primary" />
               <Typography variant="h6">Step 1</Typography>
               <Typography variant="body2">
-                Add a photo and a video. Choose a frame from your video as the
-                photo or use one of our demo files.
+                Upload a video and choose whether to include a button link.
               </Typography>
             </Grid>
             <Grid item xs={12} sm={4} textAlign="center">
-              <AutoFixHigh sx={{ fontSize: 80 }} color="primary" />
+              <Image sx={{ fontSize: 80 }} color="primary" />
               <Typography variant="h6">Step 2</Typography>
               <Typography variant="body2">
-                Hit "Create Experience" to publish it to the web, then use the
-                QR code to test it out on your mobile device.
+                Add your target image. Upload a file or choose a frame from your
+                video.
               </Typography>
             </Grid>
             <Grid item xs={12} sm={4} textAlign="center">
-              <Download sx={{ fontSize: 80 }} color="primary" />
+              <QrCodeScanner sx={{ fontSize: 80 }} color="primary" />
               <Typography variant="h6">Step 3</Typography>
               <Typography variant="body2">
-                Share the preview page with collaborators, then download the QR
-                code to include with your photos and artwork.
+                Try it out by scanning the QR code in the upper right corner.
               </Typography>
             </Grid>
           </Grid>

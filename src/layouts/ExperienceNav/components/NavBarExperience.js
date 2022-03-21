@@ -56,7 +56,11 @@ const NavBarAdmin = () => {
           </Box>
           <Box display="flex">
             {!!experience && (
-              <Box mr={1} textAlign="end">
+              <Box
+                mr={1}
+                textAlign="end"
+                sx={{ diplay: { xs: 'none', sm: 'block' } }}
+              >
                 <ExperienceName
                   text={name}
                   // placeholder="Your Experience"

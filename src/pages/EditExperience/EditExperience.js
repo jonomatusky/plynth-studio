@@ -67,11 +67,11 @@ const EditExperience = () => {
   const [videoDialogIsOpen, setVideoDialogIsOpen] = useState(false)
   const [imageDialogIsOpen, setImageDialogIsOpen] = useState(false)
 
-  const showTooltips =
-    showOnboarding &&
-    !welcomeDialogIsOpen &&
-    !videoDialogIsOpen &&
-    !imageDialogIsOpen
+  // const showTooltips =
+  //   showOnboarding &&
+  //   !welcomeDialogIsOpen &&
+  //   !videoDialogIsOpen &&
+  //   !imageDialogIsOpen
 
   const handleUpdateImage = ({ filepath, width, height }) => {
     let newObject = { ...object }
@@ -233,7 +233,7 @@ const EditExperience = () => {
                         mediaType="video"
                         videoSrc={videoUrl}
                         imageSrc={imageUrl}
-                        showTooltips={showTooltips}
+                        // showTooltips={showTooltips}
                         handleClick={() => setVideoDialogIsOpen(true)}
                       />
                     </Grid>
@@ -309,7 +309,7 @@ const EditExperience = () => {
                         <AddImage
                           imageSrc={imageUrl}
                           videoSrc={videoUrl}
-                          showTooltips={showTooltips}
+                          // showTooltips={showTooltips}
                           handleClick={() => setImageDialogIsOpen(true)}
                         />
                       </Grid>

@@ -186,8 +186,9 @@ const VideoUploadDialog = ({ submit, videoUrl, open, onClose }) => {
             }}
           >
             <input {...getInputProps()} />
+            <Box color="text.secondary"></Box>
             <Button
-              color="secondary"
+              color="inherit"
               sx={{
                 width: '100%',
                 height: '100%',
@@ -196,17 +197,17 @@ const VideoUploadDialog = ({ submit, videoUrl, open, onClose }) => {
               }}
             >
               {videoLoading ? (
-                <Box>
+                <Box color="text.secondary">
                   <CircularProgress color="inherit" />
-                  <Typography color="secondary" variant="subtitle2">
+                  <Typography color="inherit" variant="subtitle2">
                     Uploading... {status > 0 ? status + '%' : ''}
                   </Typography>
                 </Box>
               ) : name ? (
-                <File />
+                <File color="text.secondary" />
               ) : (
-                <Box>
-                  <Upload color="secondary" sx={{ fontSize: 40 }} />
+                <Box color="text.secondary">
+                  <Upload color="inherit" sx={{ fontSize: 40 }} />
 
                   <Typography>{`Upload a video.`}</Typography>
                   <Typography>{`Accepted file types: mp4, mov`}</Typography>
@@ -258,7 +259,7 @@ const VideoUploadDialog = ({ submit, videoUrl, open, onClose }) => {
                 variant="secondary"
                 size="small"
               >
-                Cancel
+                Close
               </Button>
             </Box>
           </Box>
