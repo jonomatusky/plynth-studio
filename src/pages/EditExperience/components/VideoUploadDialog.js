@@ -72,7 +72,6 @@ const VideoUploadDialog = ({ submit, videoUrl, open, onClose }) => {
       let fileName
 
       let fileSize = file.size
-      console.log('fileSize:', fileSize)
       const chunkSize = 1024 * 1024 * 10
 
       const partCount = Math.ceil(fileSize / chunkSize)
@@ -91,9 +90,6 @@ const VideoUploadDialog = ({ submit, videoUrl, open, onClose }) => {
         uploadId = res.uploadId
         fileName = res.fileName
 
-        console.log(fileName)
-        console.log(parts)
-
         const keys = Object.keys(parts)
         const promises = []
 
@@ -103,8 +99,6 @@ const VideoUploadDialog = ({ submit, videoUrl, open, onClose }) => {
           const end = (index + 1) * chunkSize
           const blob =
             index < keys.length ? file.slice(start, end) : file.slice(start)
-
-          console.log(blob)
 
           promises.push(
             axios.put(parts[index], blob, {

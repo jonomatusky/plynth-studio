@@ -17,7 +17,6 @@ const Home = () => {
 
   const handleCreateExperience = async () => {
     if (atLimit) {
-      console.log('at limit')
       setDialogIsOpen(true)
     } else {
       try {

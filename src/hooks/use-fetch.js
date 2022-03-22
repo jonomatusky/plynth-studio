@@ -21,7 +21,6 @@ export const useFetch = () => {
   useEffect(() => {
     const fetch = async () => {
       try {
-        console.log('fetching user')
         await fetchUser()
       } catch (err) {
         setError({ message: err.message })
@@ -36,7 +35,6 @@ export const useFetch = () => {
   useEffect(() => {
     const fetch = async () => {
       try {
-        console.log('fetching experiences')
         await fetchExperiences()
       } catch (err) {
         setError({ message: err.message })

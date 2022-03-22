@@ -83,7 +83,6 @@ const ShareButton = ({ experience }) => {
 
   const handleSubmit = async values => {
     setSendStatus('pending')
-    console.log(values)
     values.id = id
     values.posterUrl = posterUrl
 

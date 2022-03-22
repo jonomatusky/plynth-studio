@@ -17,7 +17,6 @@ const ExperienceItem = ({ exp }) => {
   }, [exp.name])
 
   const updateName = async () => {
-    console.log('submitting')
     try {
       await updateExperience({ id: exp.id, name: name })
     } catch (err) {
