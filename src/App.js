@@ -23,6 +23,7 @@ import PostCheckoutDialog from 'components/PostCheckoutDialog'
 import Fetch from 'components/Fetch'
 import EditExperience from 'pages/EditExperience/EditExperience'
 import ExperienceNav from 'layouts/ExperienceNav/ExperienceNav'
+import NotFound from 'components/NotFound'
 
 const { REACT_APP_POSTHOG_KEY, REACT_APP_GA } = process.env
 
@@ -65,6 +66,7 @@ const App = () => {
             {/* <Route path="/lively-signup" element={<LivelySignUp />} /> */}
             <Route path="/recover" element={<Recover />} />
           </Route>
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
     </UserContext.Provider>

@@ -28,18 +28,15 @@ import AddImage from './components/AddImage'
 import ExperienceForm from './components/ExperienceForm'
 import { DeleteForever } from '@mui/icons-material'
 
-const { REACT_APP_PUBLIC_URL } = process.env
-
 const EditExperience = () => {
   const { isOpen, handleOpen, handleClose } = useDialog()
   const { selectExperience, updateExperience, experiences, updateStatus } =
     useExperienceStore()
   const { setError } = useAlertStore()
   const { id } = useParams()
-  const experiencePage = !!id ? REACT_APP_PUBLIC_URL + '/p/' + id : null
 
   const experience = selectExperience(id) || {}
-  const { targetUrl, objects, hideLinks } = experience || {}
+  const { targetUrl, objects, hideLinks, experienceUrl } = experience || {}
   const object = (objects || [])[0] || {}
   const { posterUrl: imageUrl, assetUrl: videoUrl } = object
 
@@ -334,13 +331,14 @@ const EditExperience = () => {
                         <Box
                           position="absolute"
                           sx={{ display: isLoading ? 'block' : 'none' }}
+                          color="text.secondary"
                         >
-                          <CircularProgress color="secondary" />
+                          <CircularProgress color="inherit" />
                         </Box>
                         <QRCode
                           size={100}
                           id="qr"
-                          value={experiencePage}
+                          value={experienceUrl}
                           fgColor={
                             isLoading || !imageUrl || !videoUrl
                               ? '#00000022'

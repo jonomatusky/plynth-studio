@@ -12,6 +12,8 @@ import { useUserStore } from 'hooks/store/use-user-store'
 import { Close } from '@mui/icons-material'
 import PricingPanel from './PricingPanel'
 
+const { REACT_APP_STRIPE_PRICE_ID_1, REACT_APP_STRIPE_PRICE_ID_2 } = process.env
+
 const PlansDialog = () => {
   const { isOpen, closePlans } = usePlanStore()
   const { user } = useUserStore()
@@ -48,8 +50,7 @@ const PlansDialog = () => {
         '120 seconds/100MB per video',
         '2GB storage limit',
       ],
-      // stripePriceId: 'price_1KcpqGBhwDAAjOj1lsnfXv87',
-      stripePriceId: 'price_1Kd0gyBhwDAAjOj1F5MyOCWV',
+      stripePriceId: REACT_APP_STRIPE_PRICE_ID_1,
     },
     {
       name: 'Pro',
@@ -66,8 +67,7 @@ const PlansDialog = () => {
         'Unlimited video length/250MB per video',
         '10GB storage limit',
       ],
-      // stripePriceId: 'price_1KcptjBhwDAAjOj1YxBYmOKB',
-      stripePriceId: 'price_1Kd0gyBhwDAAjOj1F5MyOCWV',
+      stripePriceId: REACT_APP_STRIPE_PRICE_ID_2,
     },
   ]
 

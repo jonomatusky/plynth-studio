@@ -66,6 +66,12 @@ const ImageUploadDialog = ({
     setImageToCrop({})
   }, [open, imageUrl])
 
+  useEffect(() => {
+    if (!videoUrl) {
+      setValue(2)
+    }
+  }, [videoUrl])
+
   const OptionButton = ({ index, icon, label, disabled }) => {
     const Icon = icon
 

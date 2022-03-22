@@ -35,7 +35,7 @@ const Account = () => {
     } else {
       setIsManagingPlan(true)
       try {
-        if (status === 'idle') {
+        if (status !== 'loading') {
           const { url } = await request({
             url: '/payments/billing',
             method: 'POST',
@@ -50,6 +50,8 @@ const Account = () => {
             })
           }
           window.location.href = url
+        } else {
+          setIsManagingPlan(false)
         }
       } catch (err) {
         setIsManagingPlan(false)
@@ -104,7 +106,7 @@ const Account = () => {
                   fullWidth
                   loading={isManagingPlan}
                 >
-                  {user.plan !== 'free' ? 'Change Plan' : 'Manage Plan'}
+                  {user.plan !== 'free' ? 'Manage Plan' : 'Upgrade'}
                 </LoadingButton>
               </Box>
             </Paper>

@@ -45,6 +45,7 @@ const PricingPanel = ({
 
       stripe.redirectToCheckout({ sessionId })
     } catch (err) {
+      console.log(err)
       setIsCheckingOut(false)
       setError({
         message: 'Something went wrong. Please try again.',

@@ -48,7 +48,7 @@ const VideoUploadDialog = ({ submit, videoUrl, open, onClose }) => {
     const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
       multiple: false,
       accept: 'video/mp4,video/quicktime',
-      maxSize: (user.fileSizeLimit || 50) * 1024 * 1024,
+      maxSize: (user.sizeLimit || 50) * 1024 * 1024,
       maxFiles: 1,
     })
 
@@ -90,60 +90,46 @@ const VideoUploadDialog = ({ submit, videoUrl, open, onClose }) => {
         parts = res.parts
         uploadId = res.uploadId
         fileName = res.fileName
-      } catch (err) {
-        setError({ message: 'Unable to upload your video. Please try again.' })
-      }
 
-      console.log(fileName)
-      console.log(parts)
+        console.log(fileName)
+        console.log(parts)
 
-      const keys = Object.keys(parts)
-      const promises = []
+        const keys = Object.keys(parts)
+        const promises = []
 
-      for (const indexStr of keys) {
-        const index = parseInt(indexStr)
-        const start = index * chunkSize
-        const end = (index + 1) * chunkSize
-        const blob =
-          index < keys.length ? file.slice(start, end) : file.slice(start)
+        for (const indexStr of keys) {
+          const index = parseInt(indexStr)
+          const start = index * chunkSize
+          const end = (index + 1) * chunkSize
+          const blob =
+            index < keys.length ? file.slice(start, end) : file.slice(start)
 
-        console.log(blob)
+          console.log(blob)
 
-        promises.push(
-          axios.put(parts[index], blob, {
-            onUploadProgress: progressEvent => {
-              if (keys.length === 1 || index !== keys.length - 1) {
-                if (progressEvent.total) {
-                  const uploadProgress = Math.round(
-                    (progressEvent.loaded / progressEvent.total) * 100
-                  )
+          promises.push(
+            axios.put(parts[index], blob, {
+              onUploadProgress: progressEvent => {
+                if (keys.length === 1 || index !== keys.length - 1) {
+                  if (progressEvent.total) {
+                    const uploadProgress = Math.round(
+                      (progressEvent.loaded / progressEvent.total) * 100
+                    )
 
-                  setStatus(uploadProgress)
+                    setStatus(uploadProgress)
+                  }
                 }
-              }
-            },
-          })
-        )
-      }
+              },
+            })
+          )
+        }
 
-      console.log(promises)
+        let resParts = await Promise.all(promises)
 
-      let resParts
+        const partsList = resParts.map((part, index) => ({
+          ETag: part.headers.etag,
+          PartNumber: index + 1,
+        }))
 
-      try {
-        resParts = await Promise.all(promises)
-        console.log(resParts)
-      } catch (err) {
-        console.log(err)
-        setError({ message: 'Unable to upload your video. Please try again.' })
-      }
-
-      const partsList = resParts.map((part, index) => ({
-        ETag: part.headers.etag,
-        PartNumber: index + 1,
-      }))
-
-      try {
         await request({
           url: `/uploads/multipart/` + uploadId,
           method: 'PATCH',
