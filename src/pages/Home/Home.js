@@ -1,38 +1,38 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Container, Box, Typography, Button } from '@mui/material'
 import { Add } from '@mui/icons-material'
 
 import useExperienceStore from 'hooks/store/use-experience-store'
 import ExperienceItem from './components/ExperienceItem'
-import LimitDialog from 'components/LimitDialog'
-import useUserStore from 'hooks/store/use-user-store'
+// import LimitDialog from 'components/LimitDialog'
+// import useUserStore from 'hooks/store/use-user-store'
 
 const Home = () => {
-  const [dialogIsOpen, setDialogIsOpen] = useState(false)
-  const { user } = useUserStore()
+  // const [dialogIsOpen, setDialogIsOpen] = useState(false)
+  // const { user } = useUserStore()
   const navigate = useNavigate()
   const { experiences, createExperience } = useExperienceStore()
-  const atLimit = experiences.length >= user.experienceLimit
+  // const atLimit = experiences.length >= user.experienceLimit
 
   const handleCreateExperience = async () => {
-    if (atLimit) {
-      setDialogIsOpen(true)
-    } else {
-      try {
-        const newExperience = await createExperience({
-          name: 'My New Experience',
-        })
-        navigate(`/experiences/${newExperience.id}/edit`)
-      } catch (err) {
-        // handled by useThunk
-      }
+    // if (atLimit) {
+    //   setDialogIsOpen(true)
+    // } else {
+    try {
+      const newExperience = await createExperience({
+        name: 'My New Experience',
+      })
+      navigate(`/experiences/${newExperience.id}/edit`)
+    } catch (err) {
+      // handled by useThunk
     }
+    // }
   }
 
   return (
     <>
-      <LimitDialog open={dialogIsOpen} onClose={() => setDialogIsOpen(false)} />
+      {/* <LimitDialog open={dialogIsOpen} onClose={() => setDialogIsOpen(false)} /> */}
       <Container maxWidth="lg">
         <Box
           sx={{ display: { xs: 'none', sm: 'flex' } }}

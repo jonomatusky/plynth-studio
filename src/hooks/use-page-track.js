@@ -4,7 +4,7 @@ import posthog from 'posthog-js'
 import ReactGA from 'react-ga'
 import useUserStore from './store/use-user-store'
 
-const { REACT_APP_POSTHOG_KEY } = process.env
+const { REACT_APP_POSTHOG_KEY, REACT_APP_GA } = process.env
 
 export default function usePageTrack() {
   const { pathname, search, hash } = useLocation()
@@ -16,5 +16,5 @@ export default function usePageTrack() {
     }
   }, [pathname, hash, user])
 
-  ReactGA.pageview(pathname + search)
+  !!REACT_APP_GA && ReactGA.pageview(pathname + search)
 }

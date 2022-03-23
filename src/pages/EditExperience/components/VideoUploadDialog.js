@@ -16,9 +16,10 @@ import useAlertStore from 'hooks/store/use-alert-store'
 import { useRequest } from 'hooks/use-request'
 import { useUserStore } from 'hooks/store/use-user-store'
 import { usePlanStore } from 'hooks/store/use-plan-store'
-import VideoJS from 'components/VideoJS'
 
 const VideoUploadDialog = ({ submit, videoUrl, open, onClose }) => {
+  const controller = new AbortController()
+
   const [existingVideoUrl, setExistingVideoUrl] = useState(videoUrl)
 
   const { user } = useUserStore()
@@ -93,6 +94,8 @@ const VideoUploadDialog = ({ submit, videoUrl, open, onClose }) => {
         const keys = Object.keys(parts)
         const promises = []
 
+        let uploadArray = new Array(partCount - 1).fill(0)
+
         for (const indexStr of keys) {
           const index = parseInt(indexStr)
           const start = index * chunkSize
@@ -100,14 +103,23 @@ const VideoUploadDialog = ({ submit, videoUrl, open, onClose }) => {
           const blob =
             index < keys.length ? file.slice(start, end) : file.slice(start)
 
+          const signal = controller.signal
+
           promises.push(
             axios.put(parts[index], blob, {
+              signal,
               onUploadProgress: progressEvent => {
                 if (keys.length === 1 || index !== keys.length - 1) {
                   if (progressEvent.total) {
-                    const uploadProgress = Math.round(
+                    uploadArray[index] =
                       (progressEvent.loaded / progressEvent.total) * 100
+
+                    let uploadProgress = Math.round(
+                      uploadArray.reduce((a, b) => a + b, 0) /
+                        uploadArray.length
                     )
+
+                    console.log(uploadArray)
 
                     setStatus(uploadProgress)
                   }
@@ -132,10 +144,19 @@ const VideoUploadDialog = ({ submit, videoUrl, open, onClose }) => {
             parts: partsList,
           },
         })
+
         await submit(fileName)
       } catch (err) {
         console.log(err)
-        setError({ message: 'Unable to upload your video. Please try again.' })
+        if (err.message === 'canceled') {
+          setError({
+            message: 'Video upload canceled.',
+          })
+        } else {
+          setError({
+            message: 'Unable to upload your video. Please try again.',
+          })
+        }
       }
     }
 
@@ -223,6 +244,7 @@ const VideoUploadDialog = ({ submit, videoUrl, open, onClose }) => {
   }
 
   const handleClose = () => {
+    controller.abort('user cancelled')
     onClose()
   }
 
@@ -255,21 +277,6 @@ const VideoUploadDialog = ({ submit, videoUrl, open, onClose }) => {
   }
 
   const ContentReplace = () => {
-    const videoJsOptions = {
-      // lookup the options in the docs for more options
-      autoplay: true,
-      muted: true,
-      loop: true,
-      width: 568,
-      height: 360,
-      sources: [
-        {
-          src: existingVideoUrl,
-          type: 'video/mp4',
-        },
-      ],
-    }
-
     const handleReplace = () => {
       setExistingVideoUrl(null)
     }
@@ -301,7 +308,15 @@ const VideoUploadDialog = ({ submit, videoUrl, open, onClose }) => {
               alignItems="center"
               justifyContent="center"
             >
-              <VideoJS options={videoJsOptions} />
+              <video
+                autoPlay
+                muted
+                loop
+                width="568px"
+                height="360px"
+                preload="none"
+                src={existingVideoUrl}
+              />
             </Box>
           </Box>
         </Box>

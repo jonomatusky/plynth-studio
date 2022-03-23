@@ -10,13 +10,14 @@ import {
   IconButton,
   Divider,
   Link,
+  Typography,
 } from '@mui/material'
 
 import { useSession } from 'hooks/use-session'
 import { useUserStore } from 'hooks/store/use-user-store'
 import Logo from 'assets/images/plynth_logo_color.svg'
 import Image from 'components/Image'
-import { AccountCircle } from '@mui/icons-material'
+import { AccountCircle, OpenInNew } from '@mui/icons-material'
 import UpgradeButton from 'components/UpgradeButton'
 
 const NavBarAdmin = () => {
@@ -51,17 +52,36 @@ const NavBarAdmin = () => {
           alignContent="center"
         >
           <Box flexGrow={1}>
-            <Grid container>
-              <Grid item>
-                <Grid container direction="column" alignItems="center">
-                  <Box display="flex" alignItems="center">
-                    <RouterLink to="/">
-                      <Image src={Logo} height="24px" width="91px" />
-                    </RouterLink>
+            <Box display="flex" alignItems="center">
+              <RouterLink to="/">
+                <Image src={Logo} height="24px" width="91px" />
+              </RouterLink>
+              {(user.tier === 'artist' || user.tier === 'agency') && (
+                <>
+                  <Box ml={2} mr={0.5}>
+                    <Typography variant="body2">
+                      Looking for your Packs and Portal? Visit
+                    </Typography>
                   </Box>
-                </Grid>
-              </Grid>
-            </Grid>
+
+                  <Link
+                    href="https://leaflet.so"
+                    underline="none"
+                    target="_blank"
+                  >
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      alignContent="center"
+                    >
+                      <Typography variant="body2">
+                        Leaflet.so <OpenInNew fontSize="inherit" />
+                      </Typography>
+                    </Box>
+                  </Link>
+                </>
+              )}
+            </Box>
           </Box>
 
           {fetchStatus === 'succeeded' && (
