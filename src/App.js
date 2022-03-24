@@ -13,6 +13,7 @@ import SignUp from 'pages/SignUp/SignUp'
 import Recover from 'pages/Recover/Recover'
 import Home from 'pages/Home/Home'
 import Account from 'pages/Account/Account'
+import Preview from 'pages/Preview/Preview'
 
 import AlertBar from 'components/AlertBar'
 import PublicNav from 'layouts/PublicNav/PublicNav'
@@ -23,6 +24,7 @@ import PostCheckoutDialog from 'components/PostCheckoutDialog'
 import Fetch from 'components/Fetch'
 import EditExperience from 'pages/EditExperience/EditExperience'
 import ExperienceNav from 'layouts/ExperienceNav/ExperienceNav'
+import PreviewNav from 'layouts/PreviewNav/PreviewNav'
 import NotFound from 'components/NotFound'
 
 const { REACT_APP_POSTHOG_KEY, REACT_APP_GA } = process.env
@@ -50,6 +52,12 @@ const App = () => {
         <Routes>
           <Route path="/" element={<PrivateRoute component={AdminNav} />}>
             <Route path="/" element={<Home />} />
+          </Route>
+          <Route
+            path="/preview"
+            element={<PrivateRoute component={PreviewNav} />}
+          >
+            <Route path="/preview/:id" element={<Preview />} />
           </Route>
           <Route path="/" element={<PrivateRoute component={AccountNav} />}>
             <Route path="/account" element={<Account />} />

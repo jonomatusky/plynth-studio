@@ -92,7 +92,11 @@ const AddImage = ({
                     >
                       <Image
                         src={imageSrc}
-                        style={{ maxHeight: '480px', maxWidth: '100%' }}
+                        style={{
+                          height: '480px',
+                          maxWidth: '100%',
+                          objectFit: 'contain',
+                        }}
                       />
                     </Box>
                   </>

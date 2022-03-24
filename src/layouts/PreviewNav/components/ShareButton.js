@@ -22,7 +22,6 @@ import {
   FilterNone,
   IosShare,
   LocalShipping,
-  OpenInNew,
   Print,
 } from '@mui/icons-material'
 import copy from 'copy-to-clipboard'
@@ -34,9 +33,7 @@ import { useRequest } from 'hooks/use-request'
 import useDialog from 'hooks/use-dialog'
 import DownloadQR from 'components/DownloadQr'
 
-const { REACT_APP_PUBLIC_URL } = process.env
-
-const CopyButton = ({ text, label }) => {
+const CopyButton = ({ text }) => {
   const [isCopied, setIsCopied] = useState(false)
 
   useEffect(() => {
@@ -58,7 +55,7 @@ const CopyButton = ({ text, label }) => {
       fullWidth
       disableElevation
     >
-      {isCopied ? 'Copied!' : label}
+      {isCopied ? 'Copied!' : 'Copy Link'}
     </Button>
   )
 }
@@ -283,31 +280,10 @@ const ShareButton = ({ experience }) => {
                 </DownloadQR>
               </Grid>
               <Grid item xs={12}>
-                <CopyButton label="Copy Link" text={experienceUrl} />
+                <CopyButton text={experienceUrl} />
               </Grid>
             </Grid>
             <Divider />
-
-            <Grid container p={2} spacing={2} maxWidth="400px">
-              <Grid item xs={12}>
-                <Button
-                  href={REACT_APP_PUBLIC_URL + '/preview/' + id}
-                  target="_blank"
-                  variant="contained"
-                  color="secondary"
-                  fullWidth
-                  endIcon={<OpenInNew />}
-                  disableElevation
-                >
-                  Open Preview Page
-                </Button>
-              </Grid>
-              <Grid item xs={12}>
-                <CopyButton label="Copy Preview Link" text={experienceUrl} />
-              </Grid>
-            </Grid>
-            <Divider />
-
             <Grid container p={2} spacing={2} maxWidth="400px">
               <Grid item xs={12}>
                 <Button

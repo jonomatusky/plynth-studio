@@ -1,5 +1,5 @@
-import React from 'react'
-import { Box, Grid, TextField, Typography } from '@mui/material'
+import React, { useState } from 'react'
+import { Box, Grid, Switch, TextField, Typography } from '@mui/material'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 
@@ -34,6 +34,17 @@ const ExperienceForm = ({ experience }) => {
     onSubmit: handleSubmit,
     enableReinitialize: true,
   })
+
+  const [showLinksImmediately, setShowLinksImmediately] = useState(
+    experience?.showLinksImmediately
+  )
+
+  const handleShowLinksImmediately = e => {
+    const checked = e.target.checked
+
+    setShowLinksImmediately(checked)
+    updateExperience({ id, showLinksImmediately: checked })
+  }
 
   return (
     <Grid container spacing={3}>
@@ -91,6 +102,22 @@ const ExperienceForm = ({ experience }) => {
               onChange={handleColorChange}
             />
           </Box>
+        </Box>
+      </Grid>
+      <Grid item xs={12}>
+        <Box display="flex">
+          <Box pt={1}>
+            <Typography fontSize={14}>
+              <b>Show Button Immediately</b>
+            </Typography>
+            <Typography fontSize={14}>
+              Show the button as soon as the user loads the experience.
+            </Typography>
+          </Box>
+          <Switch
+            checked={showLinksImmediately}
+            onChange={handleShowLinksImmediately}
+          />
         </Box>
       </Grid>
     </Grid>
