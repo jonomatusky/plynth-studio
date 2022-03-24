@@ -68,7 +68,7 @@ const ImageUploadDialog = ({
 
   useEffect(() => {
     if (!videoUrl) {
-      setValue(2)
+      setValue(0)
     }
   }, [videoUrl])
 
