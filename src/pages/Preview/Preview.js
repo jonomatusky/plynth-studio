@@ -138,7 +138,12 @@ const Preview = () => {
               <Box display="flex">
                 <Box flexGrow={1}>
                   <Paper>
-                    <Box p={1}>
+                    <Box
+                      p={1}
+                      display="flex"
+                      justifyContent="center"
+                      width="100%"
+                    >
                       <Image
                         src={imageUrl}
                         style={{
