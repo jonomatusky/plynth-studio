@@ -303,7 +303,10 @@ const ShareButton = ({ experience }) => {
                 </Button>
               </Grid>
               <Grid item xs={12}>
-                <CopyButton label="Copy Preview Link" text={experienceUrl} />
+                <CopyButton
+                  label="Copy Preview Link"
+                  text={REACT_APP_PUBLIC_URL + '/preview/' + id}
+                />
               </Grid>
             </Grid>
             <Divider />
