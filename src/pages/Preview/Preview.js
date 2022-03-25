@@ -14,20 +14,23 @@ const Preview = () => {
   const { id } = useParams()
   const [experience, setExperience] = useState(null)
 
+  console.log(status)
+
   useEffect(() => {
     const get = async () => {
       try {
         const response = await request({
           url: `/experiences/${id}`,
-          method: 'GET',
         })
         const { experience } = response || {}
         setExperience(experience)
+        console.log(response)
       } catch (err) {
         // handled by request
       }
     }
     if (status === 'idle') {
+      console.log('getting experience')
       get()
     }
   }, [id, request, status])
@@ -98,7 +101,9 @@ const Preview = () => {
                         spacing={2}
                         mt={1}
                       >
-                        <Image height="72px" src={scanImage} />
+                        <Grid item xs={12} textAlign="center">
+                          <Image height="72px" src={scanImage} />
+                        </Grid>
                         <Grid item xs={12}>
                           <Typography>
                             1. Scan the QR code with your mobile device
@@ -113,7 +118,9 @@ const Preview = () => {
                         spacing={2}
                         mt={1}
                       >
-                        <Image height="72px" src={experienceImage} />
+                        <Grid item xs={12} textAlign="center">
+                          <Image height="72px" src={experienceImage} />
+                        </Grid>
                         <Grid item xs={12}>
                           <Typography>
                             2. Hold your device over the image to the right{' '}
@@ -146,8 +153,8 @@ const Preview = () => {
                     >
                       <Image
                         src={imageUrl}
+                        height="640px"
                         style={{
-                          height: '640px',
                           maxWidth: '100%',
                           objectFit: 'contain',
                         }}
