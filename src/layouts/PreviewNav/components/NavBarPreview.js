@@ -63,7 +63,7 @@ const NavBarAdmin = () => {
             <Image src={Logo} height="24px" width="91px" />
           </Link>
 
-          <Box>
+          <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
             <CopyButton text={REACT_APP_PUBLIC_URL + '/preview/' + id} />
           </Box>
         </Grid>

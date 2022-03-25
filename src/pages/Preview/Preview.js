@@ -8,13 +8,14 @@ import Image from 'components/Image'
 import arrow from 'assets/images/arrow.svg'
 import scanImage from 'assets/images/scan.svg'
 import experienceImage from 'assets/images/experience.svg'
+import CopyButton from 'components/CopyButton'
+
+const { REACT_APP_PUBLIC_URL } = process.env
 
 const Preview = () => {
   const { request, status } = useRequest()
   const { id } = useParams()
   const [experience, setExperience] = useState(null)
-
-  console.log(status)
 
   useEffect(() => {
     const get = async () => {
@@ -55,6 +56,47 @@ const Preview = () => {
               spacing={2}
               alignContent="flex-start"
             >
+              <Grid item xs={12} sx={{ display: { xs: 'flex', sm: 'none' } }}>
+                <Paper>
+                  <Box padding={2} pb={3}>
+                    <Grid container spacing={2} width="100%">
+                      <Grid item xs={12}>
+                        <Typography
+                          variant="h5"
+                          color="primary"
+                          textAlign="center"
+                        >
+                          <b>Switch to Desktop</b>
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Typography textAlign="center">
+                          You're viewing the preview page for a Plynth Augmented
+                          Reality experience. This page is meant to be opened on
+                          your deskptop, so that you can scan the QR below to
+                          test out the experience on your mobile device.
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={12} pt={1}>
+                        <Typography textAlign="center">
+                          <b>
+                            Please copy switch to your desktop to get started.
+                          </b>
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <CopyButton
+                          fullWidth
+                          variant="contained"
+                          text={REACT_APP_PUBLIC_URL + '/preview/' + id}
+                        >
+                          Copy Page Url
+                        </CopyButton>
+                      </Grid>
+                    </Grid>
+                  </Box>
+                </Paper>
+              </Grid>
               <Grid item xs={12}>
                 <Paper>
                   <Box padding={4} pb={6}>
@@ -66,8 +108,8 @@ const Preview = () => {
                       </Grid>
                       <Grid item xs={12}>
                         <Typography>
-                          This experience was created using Plynth. Scan the QR
-                          code to try it out before you print.
+                          Preview your experience by bringing this image to life
+                          in Augmented Reality. Scan the code to get started.
                         </Typography>
                       </Grid>
                       <Grid item xs={12} container justifyContent="center">
@@ -136,6 +178,7 @@ const Preview = () => {
               item
               md={7}
               xs={12}
+              p={2}
               // container
               // justifyContent="flex-end"
               // alignContent="stretch"
