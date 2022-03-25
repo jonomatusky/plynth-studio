@@ -36,9 +36,10 @@ const Home = () => {
       <Container maxWidth="lg">
         <Box
           sx={{ display: { xs: 'none', sm: 'flex' } }}
+          // maxWidth="832px"
           width="100%"
           flexWrap="wrap"
-          padding={6}
+          mt={5}
         >
           <Box display="flex" flexWrap="wrap" width="256px" mr={4}>
             <Box
