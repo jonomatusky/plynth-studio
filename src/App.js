@@ -53,10 +53,7 @@ const App = () => {
           <Route path="/" element={<PrivateRoute component={AdminNav} />}>
             <Route path="/" element={<Home />} />
           </Route>
-          <Route
-            path="/preview"
-            element={<PrivateRoute component={PreviewNav} />}
-          >
+          <Route path="/preview" element={<Route component={PreviewNav} />}>
             <Route path="/preview/:id" element={<Preview />} />
           </Route>
           <Route path="/" element={<PrivateRoute component={AccountNav} />}>
