@@ -63,7 +63,7 @@ const Preview = () => {
                       </Grid>
                       <Grid item xs={12}>
                         <Typography>
-                          This experince was created using Plynth. Scan the QR
+                          This experience was created using Plynth. Scan the QR
                           code to try it out before you print.
                         </Typography>
                       </Grid>

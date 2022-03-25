@@ -7,7 +7,6 @@ import {
   createExperience,
   updateExperience,
   deleteExperience,
-  setNewExperienceImage,
   clearExperiences,
 } from 'redux/experienceSlice'
 
@@ -41,13 +40,6 @@ export const useExperienceStore = () => {
     [dispatchThunk]
   )
 
-  const _setExperienceImage = useCallback(
-    image => {
-      dispatch(setNewExperienceImage(image))
-    },
-    [dispatch]
-  )
-
   const _clearExperiences = useCallback(
     image => {
       dispatch(clearExperiences())
@@ -76,7 +68,6 @@ export const useExperienceStore = () => {
     createExperience: _createExperience,
     updateExperience: _updateExperience,
     deleteExperience: _deleteExperience,
-    setNewExperienceImage: _setExperienceImage,
     clearExperiences: _clearExperiences,
     selectExperience,
     filter,

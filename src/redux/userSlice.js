@@ -82,7 +82,6 @@ const userSlice = createSlice({
   },
 })
 
-export const { setUser, pushLocation, clearError, clearUser } =
-  userSlice.actions
+export const { setUser, clearError, clearUser } = userSlice.actions
 
 export default userSlice.reducer

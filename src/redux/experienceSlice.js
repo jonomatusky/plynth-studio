@@ -135,13 +135,8 @@ const experiencesSlice = createSlice({
   },
 })
 
-export const {
-  setExperiences,
-  setExperience,
-  setNewExperienceImage,
-  clearExperiences,
-  setFilter,
-} = experiencesSlice.actions
+export const { setExperiences, clearExperiences, setFilter } =
+  experiencesSlice.actions
 
 export default experiencesSlice.reducer
 
