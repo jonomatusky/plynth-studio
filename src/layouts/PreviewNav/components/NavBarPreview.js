@@ -48,7 +48,6 @@ const NavBarAdmin = () => {
 
   return (
     <AppBar
-      position="fixed"
       sx={{ backgroundColor: 'background.paper', color: 'text.secondary' }}
       elevation={0}
     >
