@@ -7,7 +7,6 @@ import {
   Paper,
   Typography,
   Switch,
-  CircularProgress,
   Button,
 } from '@mui/material'
 import QRCode from 'qrcode.react'
@@ -19,22 +18,22 @@ import useDialog from 'hooks/use-dialog'
 import DeleteDialog from './components/DeleteDialog'
 import AddMediaButton from './components/AddMediaButton'
 import WelcomeDialog from './components/WelcomeDialog'
-import { useRequest } from 'hooks/use-request'
-import { useAlertStore } from 'hooks/store/use-alert-store'
-import { loadImgAsync } from 'util/imageHandling'
 import ImageUploadDialog from './components/ImageUploadDialog'
 import VideoUploadDialog from './components/VideoUploadDialog'
 import AddImage from './components/AddImage'
 import ExperienceForm from './components/ExperienceForm'
 import { DeleteForever } from '@mui/icons-material'
 import Loading from 'pages/Loading/Loading'
+import GenerateTargetsDialog from './components/GenerateTargetsDialog'
 
 const EditExperience = () => {
   const { isOpen, handleOpen, handleClose } = useDialog()
-  const { selectExperience, updateExperience, experiences, updateStatus } =
+  const { selectExperience, updateExperience, experiences } =
     useExperienceStore()
-  const { setError } = useAlertStore()
+
   const { id } = useParams()
+
+  const [targetError, setTargetError] = useState(null)
 
   const experience = selectExperience(id)
   const { targetUrl, objects, hideLinks, experienceUrl } = experience || {}
@@ -56,11 +55,6 @@ const EditExperience = () => {
       setWelcomeDialogIsOpen(true)
     }
   }, [showWelcomeDialogAtStart])
-
-  const [isLoading, setIsLoading] = useState(false)
-  // const [percent, setPercent] = useState(0)
-
-  const { request } = useRequest()
 
   const [videoDialogIsOpen, setVideoDialogIsOpen] = useState(false)
   const [imageDialogIsOpen, setImageDialogIsOpen] = useState(false)
@@ -87,89 +81,6 @@ const EditExperience = () => {
     updateExperience({ id, objects: [newObject] })
   }
 
-  useEffect(() => {
-    if (
-      imageUrl &&
-      !targetUrl &&
-      updateStatus === 'idle' &&
-      !isLoading &&
-      !videoDialogIsOpen &&
-      !imageDialogIsOpen
-    ) {
-      setIsLoading(true)
-      const getImageTargets = async () => {
-        try {
-          const response = await request({
-            url: imageUrl,
-            responseType: 'blob',
-          })
-
-          const blob = await response
-          const src = URL.createObjectURL(blob)
-
-          let img = await loadImgAsync(src)
-          URL.revokeObjectURL(src)
-
-          let compiler
-
-          try {
-            compiler = new window.MINDAR.IMAGE.Compiler()
-            await compiler.compileImageTargets([img], progress => {
-              // console.log(progress.toFixed(0))
-              return
-              // setPercent(progress.toFixed(0))
-            })
-          } catch (err) {
-            console.log(err)
-          }
-
-          const exportedBuffer = await compiler.exportData()
-          var targetBlob = new Blob([exportedBuffer])
-          var targetFile = new File([targetBlob], `${id}-targets.mind`)
-
-          let { signedUrl, filepath } = await request({
-            url: '/uploads/sign-s3',
-            method: 'POST',
-            data: {
-              fileName: `${id}-targets`,
-              fileType: 'application/mind',
-            },
-          })
-
-          await request({
-            url: signedUrl,
-            method: 'PUT',
-            data: targetFile,
-            timeout: 100000,
-          })
-
-          await updateExperience({ id, target: filepath })
-          setIsLoading(false)
-        } catch (err) {
-          console.log(err)
-          setError({
-            message:
-              'Sorry, there was an error creating your experience. Please try again.',
-          })
-          setIsLoading(false)
-        }
-      }
-
-      getImageTargets()
-    }
-  }, [
-    imageUrl,
-    targetUrl,
-    id,
-    request,
-    setError,
-    updateExperience,
-    updateStatus,
-    isLoading,
-    imageDialogIsOpen,
-    videoDialogIsOpen,
-  ])
-
   const [showLinkForm, setShowLinkForm] = useState(!hideLinks)
 
   const handleShowLinks = e => {
@@ -183,14 +94,29 @@ const EditExperience = () => {
     setShowLinkForm(!hideLinks)
   }, [hideLinks])
 
+  const targetDialogIsOpen =
+    !!videoUrl &&
+    !!imageUrl &&
+    !targetUrl &&
+    !targetError &&
+    !imageDialogIsOpen &&
+    !videoDialogIsOpen
+
+  console.log(targetUrl)
+
   return (
     <>
+      <GenerateTargetsDialog
+        open={targetDialogIsOpen}
+        setTargetError={setTargetError}
+      />
       <ImageUploadDialog
         open={imageDialogIsOpen}
         imageUrl={imageUrl}
         videoUrl={videoUrl}
         submitImage={handleUpdateImage}
         onClose={() => setImageDialogIsOpen(false)}
+        setTargetError={setTargetError}
       />
       <VideoUploadDialog
         open={videoDialogIsOpen}
@@ -331,44 +257,34 @@ const EditExperience = () => {
                           alignItems="center"
                           justifyContent="center"
                         >
-                          <Box
+                          {/* <Box
                             position="absolute"
                             sx={{ display: isLoading ? 'block' : 'none' }}
                             color="text.secondary"
                           >
                             <CircularProgress color="inherit" />
-                          </Box>
+                          </Box> */}
                           <QRCode
                             size={100}
                             id="qr"
                             value={experienceUrl}
-                            fgColor={
-                              isLoading || !imageUrl || !videoUrl
-                                ? '#00000022'
-                                : '#000000'
-                            }
+                            fgColor={!targetUrl ? '#00000022' : '#000000'}
                           />
                         </Box>
                         <Typography
                           variant="h6"
-                          color={
-                            isLoading || !imageUrl || !videoUrl
-                              ? 'text.disabled'
-                              : 'text.primary'
-                          }
+                          color={!targetUrl ? 'text.disabled' : 'text.primary'}
                           pt={1}
                         >
                           <b>Preview</b>
                         </Typography>
                         <Typography
                           variant="body2"
-                          color={
-                            isLoading || !imageUrl || !videoUrl
-                              ? 'text.disabled'
-                              : 'text.primary'
-                          }
+                          color={!targetUrl ? 'text.disabled' : 'text.primary'}
                         >
-                          Scan the QR code and hold your phone up to the image.
+                          {targetUrl
+                            ? 'Publish your experience to test it out.'
+                            : 'Add an image and a video to try it out'}
                         </Typography>
                       </Box>
                     </Box>

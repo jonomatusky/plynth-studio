@@ -16,6 +16,7 @@ import useAlertStore from 'hooks/store/use-alert-store'
 import { useRequest } from 'hooks/use-request'
 import { useUserStore } from 'hooks/store/use-user-store'
 import { usePlanStore } from 'hooks/store/use-plan-store'
+import Video from 'components/Video'
 
 const VideoUploadDialog = ({ submit, videoUrl, open, onClose }) => {
   const controller = new AbortController()
@@ -118,8 +119,6 @@ const VideoUploadDialog = ({ submit, videoUrl, open, onClose }) => {
                       uploadArray.reduce((a, b) => a + b, 0) /
                         uploadArray.length
                     )
-
-                    console.log(uploadArray)
 
                     setStatus(uploadProgress)
                   }
@@ -308,7 +307,7 @@ const VideoUploadDialog = ({ submit, videoUrl, open, onClose }) => {
               alignItems="center"
               justifyContent="center"
             >
-              <video
+              <Video
                 autoPlay
                 muted
                 loop
