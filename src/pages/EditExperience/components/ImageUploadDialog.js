@@ -500,12 +500,18 @@ const ImageUploadDialog = ({
           </Box>
         </DialogTitle>
         <Box width="100%" display="flex">
-          <Box width="144px" pb={2} display="flex" flexDirection="column">
+          <Box
+            width="144px"
+            pb={2}
+            display="flex"
+            flexDirection="column"
+            color="text.primary"
+          >
             <Typography textAlign="center" pb={1}>
               <b>Choose Crop:</b>
             </Typography>
             <Button
-              color={currentCrop === 0 ? 'primary' : 'secondary'}
+              color={currentCrop === 0 ? 'primary' : 'inherit'}
               fullWidth
               startIcon={<CropPortrait />}
               // sx={{
@@ -533,7 +539,7 @@ const ImageUploadDialog = ({
               2:3 (4" x 6")
             </Button>
             <Button
-              color={currentCrop === 1 ? 'primary' : 'secondary'}
+              color={currentCrop === 1 ? 'primary' : 'inherit'}
               startIcon={<CropLandscape />}
               fullWidth
               // sx={{
@@ -561,7 +567,7 @@ const ImageUploadDialog = ({
               3:2 (6" x 4")
             </Button>
             <Button
-              color={currentCrop === 2 ? 'primary' : 'secondary'}
+              color={currentCrop === 2 ? 'primary' : 'inherit'}
               startIcon={<CropSquare />}
               fullWidth
               // sx={{
@@ -584,7 +590,7 @@ const ImageUploadDialog = ({
               1:1 (Square)
             </Button>
             <Button
-              color={currentCrop === 3 ? 'primary' : 'secondary'}
+              color={currentCrop === 3 ? 'primary' : 'inherit'}
               startIcon={<CropOriginal />}
               fullWidth
               // sx={{
