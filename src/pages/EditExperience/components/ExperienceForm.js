@@ -98,7 +98,7 @@ const ExperienceForm = ({ experience }) => {
           </Box>
           <Box>
             <ButtonColorPicker
-              color={color || '#ffffff'}
+              color={color || '#000'}
               onChange={handleColorChange}
             />
           </Box>

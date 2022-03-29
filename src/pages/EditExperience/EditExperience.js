@@ -102,8 +102,6 @@ const EditExperience = () => {
     !imageDialogIsOpen &&
     !videoDialogIsOpen
 
-  console.log(targetUrl)
-
   return (
     <>
       <GenerateTargetsDialog
@@ -251,7 +249,7 @@ const EditExperience = () => {
                 >
                   <Paper>
                     <Box padding={2}>
-                      <Box width="100px">
+                      <Box width="120px">
                         <Box
                           display="flex"
                           alignItems="center"
@@ -265,7 +263,7 @@ const EditExperience = () => {
                             <CircularProgress color="inherit" />
                           </Box> */}
                           <QRCode
-                            size={100}
+                            size={120}
                             id="qr"
                             value={experienceUrl}
                             fgColor={!targetUrl ? '#00000022' : '#000000'}
@@ -283,8 +281,8 @@ const EditExperience = () => {
                           color={!targetUrl ? 'text.disabled' : 'text.primary'}
                         >
                           {targetUrl
-                            ? 'Publish your experience to test it out.'
-                            : 'Add an image and a video to try it out'}
+                            ? 'Scan the QR code to try out the experience.'
+                            : 'Add an image and a video to try out the experience.'}
                         </Typography>
                       </Box>
                     </Box>

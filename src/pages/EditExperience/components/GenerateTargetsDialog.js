@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import {
   CircularProgress,
@@ -7,6 +7,8 @@ import {
   Box,
   DialogTitle,
   Typography,
+  DialogActions,
+  Button,
 } from '@mui/material'
 import { loadImgAsync } from 'util/imageHandling'
 import { useRequest } from 'hooks/use-request'
@@ -29,13 +31,14 @@ const TargetSpinner = ({ setTargetError }) => {
   const object = objects[0] || {}
   const { posterUrl: imageUrl } = object || {}
 
+  let isMounted = useRef(true)
+
   useEffect(() => {
-    let isMounted = true
+    let compiler
 
     if (imageUrl) {
       const getImageTargets = async () => {
         let img
-        let compiler
         let src
         let signedUrl
         let filepath
@@ -107,7 +110,8 @@ const TargetSpinner = ({ setTargetError }) => {
 
       return () => {
         // clean up
-        isMounted = false
+        isMounted.current = false
+        compiler = null
       }
     }
   }, [imageUrl, id, request, setError, updateExperience, setTargetError])
@@ -129,6 +133,9 @@ const GenerateTargetsDialog = ({ open, setTargetError }) => {
       <DialogContent>
         <Box>{open && <TargetSpinner setTargetError={setTargetError} />}</Box>
       </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose}>Cancel</Button>
+      </DialogActions>
     </Dialog>
   )
 }
