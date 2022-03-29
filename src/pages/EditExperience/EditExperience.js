@@ -65,13 +65,16 @@ const EditExperience = () => {
   //   !videoDialogIsOpen &&
   //   !imageDialogIsOpen
 
-  const handleUpdateImage = ({ filepath, width, height }) => {
+  const handleUpdateImage = async ({ filepath, width, height }) => {
     let newObject = { ...object }
     newObject.poster = filepath
     newObject.width = width
     newObject.height = height
 
-    updateExperience({ id, target: null, objects: [newObject] })
+    try {
+      await updateExperience({ id, target: null, objects: [newObject] })
+      setTargetError(false)
+    } catch (err) {}
   }
 
   const handleUpdateVideo = video => {

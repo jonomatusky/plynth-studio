@@ -101,7 +101,8 @@ const TargetSpinner = ({ setTargetError }) => {
         } catch (err) {
           setTargetError(true)
           setError({
-            message: 'Something went wrong. Please use a different image.',
+            message:
+              'Unable to generate your experience. Please referesh the page or use a different target image.',
           })
         }
       }
