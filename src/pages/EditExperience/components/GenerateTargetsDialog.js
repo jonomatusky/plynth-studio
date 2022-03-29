@@ -117,12 +117,7 @@ const TargetSpinner = ({ setTargetError }) => {
     }
   }, [imageUrl, id, request, setError, updateExperience, setTargetError])
 
-  return (
-    <Box textAlign="center">
-      <CircularProgress />
-      <Typography>{percent}%</Typography>
-    </Box>
-  )
+  return <Typography>{percent}%</Typography>
 }
 
 const GenerateTargetsDialog = ({ open, setTargetError }) => {
@@ -132,7 +127,14 @@ const GenerateTargetsDialog = ({ open, setTargetError }) => {
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle>Generating Experience...</DialogTitle>
       <DialogContent>
-        <Box>{open && <TargetSpinner setTargetError={setTargetError} />}</Box>
+        <Box>
+          {open && (
+            <Box textAlign="center">
+              <CircularProgress />
+              <TargetSpinner setTargetError={setTargetError} />
+            </Box>
+          )}
+        </Box>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
