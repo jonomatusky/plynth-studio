@@ -7,6 +7,9 @@
       "hosting": {
         "production": [
           "plynth-studio"
+        ],
+        "staging": [
+          "plynth-staging"
         ]
       }
     }

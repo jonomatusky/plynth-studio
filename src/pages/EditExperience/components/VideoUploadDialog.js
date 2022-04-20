@@ -254,6 +254,74 @@ const ContentUpload = ({ handleClose, submit, controller }) => {
   )
 }
 
+const ContentReplace = ({
+  handleClose,
+  setExistingVideoUrl,
+  existingVideoUrl,
+}) => {
+  const handleReplace = () => {
+    setExistingVideoUrl(null)
+  }
+
+  return (
+    <>
+      <DialogTitle>
+        <Box width="100%" display="flex" justifyContent="space-between">
+          <Box>Current Video</Box>
+          <Box>
+            <Button
+              endIcon={<Close />}
+              onClick={handleClose}
+              variant="secondary"
+              size="small"
+            >
+              Cancel
+            </Button>
+          </Box>
+        </Box>
+      </DialogTitle>
+      <Box width="100%" display="flex">
+        <Box width="100%" pr={2} pl={2}>
+          <Box
+            height="360px"
+            width="568px"
+            backgroundColor="#00000010"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Video
+              autoPlay
+              muted
+              loop
+              width="568px"
+              height="360px"
+              preload="none"
+              src={existingVideoUrl}
+            />
+          </Box>
+        </Box>
+      </Box>
+
+      <Box
+        width="100%"
+        display="flex"
+        justifyContent="space-between"
+        alignContent="center"
+        p={2}
+        color="text.secondary"
+      >
+        <Button color="inherit" endIcon={<Loop />} onClick={handleReplace}>
+          Replace
+        </Button>
+        <Button variant="contained" onClick={handleClose}>
+          Done
+        </Button>
+      </Box>
+    </>
+  )
+}
+
 const VideoUploadDialog = ({ submit, videoUrl, open, onClose }) => {
   const controller = new AbortController()
 
@@ -268,76 +336,20 @@ const VideoUploadDialog = ({ submit, videoUrl, open, onClose }) => {
     onClose()
   }
 
-  const ContentReplace = () => {
-    const handleReplace = () => {
-      setExistingVideoUrl(null)
-    }
-
-    return (
-      <>
-        <DialogTitle>
-          <Box width="100%" display="flex" justifyContent="space-between">
-            <Box>Current Video</Box>
-            <Box>
-              <Button
-                endIcon={<Close />}
-                onClick={handleClose}
-                variant="secondary"
-                size="small"
-              >
-                Cancel
-              </Button>
-            </Box>
-          </Box>
-        </DialogTitle>
-        <Box width="100%" display="flex">
-          <Box width="100%" pr={2} pl={2}>
-            <Box
-              height="360px"
-              width="568px"
-              backgroundColor="#00000010"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Video
-                autoPlay
-                muted
-                loop
-                width="568px"
-                height="360px"
-                preload="none"
-                src={existingVideoUrl}
-              />
-            </Box>
-          </Box>
-        </Box>
-
-        <Box
-          width="100%"
-          display="flex"
-          justifyContent="space-between"
-          alignContent="center"
-          p={2}
-          color="text.secondary"
-        >
-          <Button color="inherit" endIcon={<Loop />} onClick={handleReplace}>
-            Replace
-          </Button>
-          <Button variant="contained" onClick={handleClose}>
-            Done
-          </Button>
-        </Box>
-      </>
-    )
-  }
-
   return (
     <Dialog open={open} onClose={handleClose}>
       {!existingVideoUrl ? (
-        <ContentUpload submit={submit} controller={controller} />
+        <ContentUpload
+          submit={submit}
+          controller={controller}
+          handleClose={handleClose}
+        />
       ) : (
-        <ContentReplace />
+        <ContentReplace
+          handleClose={handleClose}
+          existingVideoUrl={existingVideoUrl}
+          setExistingVideoUrl={setExistingVideoUrl}
+        />
       )}
     </Dialog>
   )
