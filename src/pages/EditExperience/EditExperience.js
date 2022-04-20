@@ -19,7 +19,7 @@ import DeleteDialog from './components/DeleteDialog'
 import AddMediaButton from './components/AddMediaButton'
 import WelcomeDialog from './components/WelcomeDialog'
 import ImageUploadDialog from './components/ImageUploadDialog'
-import VideoUploadDialog from './components/VideoUploadDialog'
+import VideoUploadDialog from './components/VideoUploadDialog/VideoUploadDialog'
 import AddImage from './components/AddImage'
 import ExperienceForm from './components/ExperienceForm'
 import { DeleteForever } from '@mui/icons-material'
@@ -38,7 +38,11 @@ const EditExperience = () => {
   const experience = selectExperience(id)
   const { targetUrl, objects, hideLinks, experienceUrl } = experience || {}
   const object = (objects || [])[0] || {}
-  const { posterUrl: imageUrl, assetUrl: videoUrl } = object
+  const {
+    posterUrl: imageUrl,
+    assetUrl: videoUrl,
+    assetType: videoType,
+  } = object
 
   // const previewPage = !!media.id ? `/preview/${id}/${media.id}` : null
 
@@ -122,6 +126,7 @@ const EditExperience = () => {
       <VideoUploadDialog
         open={videoDialogIsOpen}
         videoUrl={videoUrl}
+        videoType={videoType}
         submit={handleUpdateVideo}
         onClose={() => setVideoDialogIsOpen(false)}
       />
