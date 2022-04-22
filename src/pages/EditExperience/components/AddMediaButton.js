@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React from 'react'
 import { Card, Box, Typography, CardActionArea } from '@mui/material'
 import { AddPhotoAlternate, VideoCall, PlayArrow } from '@mui/icons-material'
 import ReactPlayer from 'react-player'
@@ -15,20 +15,6 @@ const AddMediaButton = ({
   showTooltips,
   handleClick,
 }) => {
-  const playerRef = useRef()
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (playerRef.current) {
-        playerRef.current.seekTo(0)
-      }
-    }, 5000)
-
-    return () => {
-      clearInterval(interval)
-    }
-  })
-
   return (
     <>
       <Card elevation={0} variant="outlined">
@@ -109,10 +95,8 @@ const AddMediaButton = ({
                           <PlayArrow color="inherit" fontSize="large" />
                         </Box>
                         <ReactPlayer
-                          ref={playerRef}
                           url={videoSrc}
                           muted
-                          loop
                           style={{ maxHeight: '184px', maxWidth: '100%' }}
                           crossOrigin="anonymous"
                         />

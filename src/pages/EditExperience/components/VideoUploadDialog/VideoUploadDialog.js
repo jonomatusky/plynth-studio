@@ -4,6 +4,7 @@ import 'react-image-crop/dist/ReactCrop.css'
 import VideoUploadScreen from './VideoUploadScreen'
 import VideoPreviewScreen from './VideoPreviewScreen'
 import VideoSelectScreen from './VideoSelectScreen'
+import VideoLinkScreen from './VideoLinkScreen'
 
 const VideoUploadDialog = ({ submit, videoType, videoUrl, open, onClose }) => {
   const controller = new AbortController()
@@ -41,7 +42,11 @@ const VideoUploadDialog = ({ submit, videoType, videoUrl, open, onClose }) => {
           setMethod={setMethod}
         />
       ) : method === 'link' ? (
-        <></>
+        <VideoLinkScreen
+          submit={submit}
+          onClose={handleClose}
+          setMethod={setMethod}
+        />
       ) : (
         <VideoSelectScreen onSelect={handleSelect} onClose={handleClose} />
       )}

@@ -2,7 +2,7 @@ import React from 'react'
 import { DialogTitle, Button, Box } from '@mui/material'
 import { Close, Loop } from '@mui/icons-material'
 import 'react-image-crop/dist/ReactCrop.css'
-import Video from 'components/Video'
+import ReactPlayer from 'react-player'
 
 const VideoPreviewScreen = ({
   handleClose,
@@ -39,13 +39,14 @@ const VideoPreviewScreen = ({
             alignItems="center"
             justifyContent="center"
           >
-            <Video
-              autoPlay
-              muted
+            <ReactPlayer
+              url={existingVideoUrl}
               loop
+              muted
+              playing={true}
               height="360px"
               preload="none"
-              src={existingVideoUrl}
+              crossOrigin="anonymous"
             />
           </Box>
         </Box>
