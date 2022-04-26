@@ -61,7 +61,7 @@ const VideoLinkScreen = ({ submit, onClose, setMethod }) => {
                   fullWidth
                   name="url"
                   label="Link"
-                  placeholder="Enter Password"
+                  placeholder="Enter a link to a video"
                   {...formik.getFieldProps('url')}
                   autoComplete="off"
                   InputLabelProps={{
