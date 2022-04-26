@@ -185,7 +185,6 @@ const EditExperience = () => {
                         <Grid item xs={12}>
                           <Box display="flex">
                             <Box pt={1}>
-                              s
                               <Typography>
                                 <b>Include a Button</b>
                               </Typography>
