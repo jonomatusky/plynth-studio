@@ -46,15 +46,14 @@ const WelcomeDialog = ({ open, onClose }) => {
               <VideoCameraBack sx={{ fontSize: 80 }} color="primary" />
               <Typography variant="h6">Step 1</Typography>
               <Typography variant="body2">
-                Upload a video and choose whether to include a button link.
+                Add a video. Enter a link or upload a file.
               </Typography>
             </Grid>
             <Grid item xs={12} sm={4} textAlign="center">
               <Image sx={{ fontSize: 80 }} color="primary" />
               <Typography variant="h6">Step 2</Typography>
               <Typography variant="body2">
-                Add your target image. Upload a file or choose a frame from your
-                video.
+                Add an image. Choose a frame from your video or upload a file.
               </Typography>
             </Grid>
             <Grid item xs={12} sm={4} textAlign="center">
