@@ -52,6 +52,7 @@ const SignUp = ({ title, text }) => {
               'There was an error creating your account. Please try again.',
           })
         }
+        setStatus('idle')
       }
     }
   }
