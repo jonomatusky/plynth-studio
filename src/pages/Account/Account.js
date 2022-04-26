@@ -9,7 +9,6 @@ import {
   Link,
 } from '@mui/material'
 import { useUserStore } from 'hooks/store/use-user-store'
-import { useExperienceStore } from 'hooks/store/use-experience-store'
 import FormEmail from './components/FormEmail'
 import firebase from 'config/firebase'
 import useAlertStore from 'hooks/store/use-alert-store'
@@ -21,7 +20,6 @@ import { useRequest } from 'hooks/use-request'
 const Account = () => {
   const { logout } = useSession()
   const { user, fetchStatus } = useUserStore()
-  const { experiences } = useExperienceStore()
   const { openPlans } = usePlanStore()
   const { setError } = useAlertStore()
   const { request, status } = useRequest()
@@ -69,7 +67,10 @@ const Account = () => {
     }
   }
 
-  const { planName, experienceLimit } = user
+  const {
+    planName,
+    // experienceLimit
+  } = user
 
   return (
     <Container maxWidth="xs">
@@ -93,10 +94,10 @@ const Account = () => {
                 <Typography>
                   You're currently on the <b>{planName}</b> plan.
                 </Typography>
-                <Typography pb={2}>
+                {/* <Typography pb={2}>
                   You're using <b>{experiences.length}</b> of{' '}
                   <b>{experienceLimit}</b> experiences.
-                </Typography>
+                </Typography> */}
                 <LoadingButton
                   variant="contained"
                   color={user.plan === 'free' ? 'primary' : 'secondary'}

@@ -13,12 +13,13 @@ import QRCode from 'qrcode.react'
 import { isMobile, isTablet } from 'react-device-detect'
 
 import useExperienceStore from 'hooks/store/use-experience-store'
+import useUserStore from 'hooks/store/use-user-store'
 import useDialog from 'hooks/use-dialog'
 
 import DeleteDialog from './components/DeleteDialog'
 import AddMediaButton from './components/AddMediaButton'
 import WelcomeDialog from './components/WelcomeDialog'
-import ImageUploadDialog from './components/ImageUploadDialog'
+import ImageUploadDialog from './components/ImageUploadDialog/ImageUploadDialog'
 import VideoUploadDialog from './components/VideoUploadDialog/VideoUploadDialog'
 import AddImage from './components/AddImage'
 import ExperienceForm from './components/ExperienceForm'
@@ -30,6 +31,7 @@ const EditExperience = () => {
   const { isOpen, handleOpen, handleClose } = useDialog()
   const { selectExperience, updateExperience, experiences } =
     useExperienceStore()
+  const { user, updateUser } = useUserStore()
 
   const { id } = useParams()
 
@@ -86,6 +88,7 @@ const EditExperience = () => {
     newObject.asset = video
 
     updateExperience({ id, objects: [newObject] })
+    updateUser({})
   }
 
   const [showLinkForm, setShowLinkForm] = useState(!hideLinks)
@@ -119,6 +122,7 @@ const EditExperience = () => {
         open={imageDialogIsOpen}
         imageUrl={imageUrl}
         videoUrl={videoUrl}
+        videoType={videoType}
         submitImage={handleUpdateImage}
         onClose={() => setImageDialogIsOpen(false)}
         setTargetError={setTargetError}
@@ -173,37 +177,41 @@ const EditExperience = () => {
                   </Box>
                 </Paper>
               </Grid>
-              <Grid item xs={12}>
-                <Paper>
-                  <Box padding={3} pt={2}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12}>
-                        <Box display="flex">
-                          <Box pt={1}>
-                            <Typography>
-                              <b>Include a Button</b>
-                            </Typography>
-                            <Typography fontSize={14}>
-                              Add a "call to action" button at the bottom of
-                              your experience.
-                            </Typography>
-                          </Box>
-                          <Switch
-                            checked={showLinkForm}
-                            onChange={handleShowLinks}
-                          />
-                        </Box>
-                      </Grid>
-
-                      {showLinkForm && (
+              {user.tier !== 'free' && (
+                <Grid item xs={12}>
+                  <Paper>
+                    <Box padding={3} pt={2}>
+                      <Grid container spacing={2}>
                         <Grid item xs={12}>
-                          <ExperienceForm experience={experience} />
+                          <Box display="flex">
+                            <Box pt={1}>
+                              s
+                              <Typography>
+                                <b>Include a Button</b>
+                              </Typography>
+                              <Typography fontSize={14}>
+                                Add a "call to action" button at the bottom of
+                                your experience.
+                              </Typography>
+                            </Box>
+                            <Switch
+                              checked={showLinkForm}
+                              onChange={handleShowLinks}
+                            />
+                          </Box>
                         </Grid>
-                      )}
-                    </Grid>
-                  </Box>
-                </Paper>
-              </Grid>
+
+                        {showLinkForm && (
+                          <Grid item xs={12}>
+                            <ExperienceForm experience={experience} />
+                          </Grid>
+                        )}
+                      </Grid>
+                    </Box>
+                  </Paper>
+                </Grid>
+              )}
+
               <Grid item xs={12}>
                 <Box color="text.secondary">
                   <Button

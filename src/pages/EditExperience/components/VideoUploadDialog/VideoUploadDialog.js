@@ -13,7 +13,9 @@ const VideoUploadDialog = ({ submit, videoType, videoUrl, open, onClose }) => {
   const [method, setMethod] = useState(null)
 
   useEffect(() => {
-    setExistingVideoUrl(videoUrl)
+    if (open) {
+      setExistingVideoUrl(videoUrl)
+    }
   }, [videoUrl, open])
 
   const handleClose = () => {
@@ -48,7 +50,11 @@ const VideoUploadDialog = ({ submit, videoType, videoUrl, open, onClose }) => {
           setMethod={setMethod}
         />
       ) : (
-        <VideoSelectScreen onSelect={handleSelect} onClose={handleClose} />
+        <VideoSelectScreen
+          onSelect={handleSelect}
+          onClose={handleClose}
+          videoType={videoType}
+        />
       )}
     </Dialog>
   )
