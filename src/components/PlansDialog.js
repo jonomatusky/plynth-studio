@@ -30,9 +30,8 @@ const PlansDialog = () => {
         'Above 100 views, experiences will be disabled until the following month',
       features: [
         'Online experience builder',
-        'Share AR and fullscreen videos',
-        '30 sec/25MB per video',
-        '100MB storage limit',
+        'Host videos on Youtube, Vimeo, and more',
+        'Upload up to three 30 sec/25MB videos',
       ],
     },
     {
@@ -46,6 +45,7 @@ const PlansDialog = () => {
       viewsSubtitle: '$0.02 for each additional view',
       features: [
         'Everything Free has, plus:',
+        'Unlimited video uploads',
         'Remove Plynth branding',
         '120 seconds/100MB per video',
         '5GB storage limit',
