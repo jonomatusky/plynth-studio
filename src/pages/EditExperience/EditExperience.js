@@ -31,7 +31,7 @@ const EditExperience = () => {
   const { isOpen, handleOpen, handleClose } = useDialog()
   const { selectExperience, updateExperience, experiences } =
     useExperienceStore()
-  const { user, updateUser } = useUserStore()
+  const { user } = useUserStore()
 
   const { id } = useParams()
 
@@ -88,7 +88,6 @@ const EditExperience = () => {
     newObject.asset = video
 
     updateExperience({ id, objects: [newObject] })
-    updateUser({})
   }
 
   const [showLinkForm, setShowLinkForm] = useState(!hideLinks)
@@ -177,7 +176,7 @@ const EditExperience = () => {
                   </Box>
                 </Paper>
               </Grid>
-              {user.tier !== 'free' && (
+              {user.plan !== 'free' && (
                 <Grid item xs={12}>
                   <Paper>
                     <Box padding={3} pt={2}>
